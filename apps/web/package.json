@@ -10,8 +10,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@nexabit/api-core": "workspace:*",
     "@nexabit/api-client": "workspace:*",
     "@nexabit/crypto": "workspace:*",
+    "@nexabit/db": "workspace:*",
     "@nexabit/networking": "workspace:*",
     "@nexabit/shared": "workspace:*",
     "@nexabit/validators": "workspace:*",

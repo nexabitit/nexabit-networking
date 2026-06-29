@@ -31,6 +31,8 @@ jobs:
           pnpm --filter @nexabit/validators build
           pnpm --filter @nexabit/crypto build
           pnpm --filter @nexabit/networking build
+          pnpm --filter @nexabit/api-core build
+          pnpm --filter @nexabit/db build
           pnpm --filter @nexabit/api-client build
 
       - name: Run tests
@@ -46,7 +48,5 @@ jobs:
       - name: Build API
         run: pnpm --filter @nexabit/api build
 
-      - name: Build Web
-        run: pnpm --filter @nexabit/web build
-        env:
-          NEXT_PUBLIC_API_URL: http://localhost:4000
+      - name: Build Web (Vercel)
+        run: pnpm run build:vercel

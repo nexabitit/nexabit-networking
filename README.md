@@ -18,13 +18,28 @@
 | Layer | Technology |
 |-------|------------|
 | Frontend | Next.js 15, React 19, Tailwind CSS 4 |
-| Backend | NestJS, TypeScript |
-| Database | PostgreSQL (Phase 2+) |
-| Cache | Redis (Phase 2+) |
+| API (production) | Next.js Route Handlers on Vercel (6 serverless functions) |
+| API (self-hosted) | NestJS in `apps/api` (Docker/VPS) |
+| Database | Neon PostgreSQL |
 | Monorepo | pnpm workspaces, Turborepo |
-| Deployment | Docker, GitHub Actions |
+| Deployment | **Vercel** + Neon, Docker optional |
 
-## Quick Start
+## Deploy to Vercel (Production)
+
+**Do not deploy `apps/api` to Vercel** — NestJS will return 404. Deploy `apps/web` only; the API is built-in at `/api/v1/*`.
+
+1. See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full step-by-step guide
+2. See **[REQUIREMENTS.md](REQUIREMENTS.md)** for env vars and Hobby plan limits
+3. Vercel **Root Directory:** `apps/web`
+4. Create a **[Neon](https://neon.tech)** database and set `DATABASE_URL`
+
+```bash
+# Quick verify after deploy
+curl https://YOUR-PROJECT.vercel.app/api/v1/health
+curl https://YOUR-PROJECT.vercel.app/api/v1/dns/lookup?domain=google.com&type=A
+```
+
+## Quick Start (Local)
 
 ### Prerequisites
 
@@ -34,20 +49,15 @@
 ### Development
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Build shared packages
-pnpm --filter @nexabit/shared build
-pnpm --filter @nexabit/validators build
-pnpm --filter @nexabit/crypto build
-pnpm --filter @nexabit/networking build
-
-# Start API (port 4000) and Web (port 3000)
-pnpm dev
+cp .env.example .env
+npx pnpm@9.15.9 install
+npx pnpm@9.15.9 run build:vercel
+npx pnpm@9.15.9 --filter @nexabit/web dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) for the web app and [http://localhost:4000/api/docs](http://localhost:4000/api/docs) for API documentation.
+Open [http://localhost:3000](http://localhost:3000) — API at [http://localhost:3000/api/v1/health](http://localhost:3000/api/v1/health).
+
+For separate NestJS API (Docker): `npx pnpm@9.15.9 --filter @nexabit/api dev` and set `NEXT_PUBLIC_API_URL=http://localhost:4000`.
 
 ### Docker
 
@@ -68,6 +78,8 @@ nexabit-networking/
 │   ├── validators/   # IP, CIDR, chmod validators
 │   ├── crypto/       # Hash, encode, password utils
 │   ├── networking/   # DNS, curl, regex helpers
+│   ├── api-core/     # Serverless API logic (Vercel)
+│   ├── db/           # Neon PostgreSQL + Drizzle schema
 │   └── api-client/   # TypeScript API client
 ├── docker-compose.yml
 └── .github/workflows/ci.yml
@@ -95,7 +107,7 @@ chmod Calculator · Cron Generator · Docker Compose Validator · Kubernetes YAM
 
 ## API
 
-Base URL: `http://localhost:4000/api/v1`
+Base URL (Vercel): `https://network.nexabitit.com/api/v1`
 
 ```bash
 # Example: DNS lookup

@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "build:vercel": "pnpm --filter @nexabit/shared build && pnpm --filter @nexabit/validators build && pnpm --filter @nexabit/crypto build && pnpm --filter @nexabit/networking build && pnpm --filter @nexabit/api-core build && pnpm --filter @nexabit/db build && pnpm --filter @nexabit/web build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
