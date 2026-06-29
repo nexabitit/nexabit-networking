@@ -7,6 +7,8 @@ export async function GET() {
     status: 'ok',
     service: 'nexabit-network-api',
     platform: 'vercel-serverless',
+    database: Boolean(process.env.DATABASE_URL),
+    apiKeys: Boolean(process.env.DATABASE_URL),
     timestamp: new Date().toISOString(),
   });
 }

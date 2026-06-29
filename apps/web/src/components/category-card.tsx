@@ -30,12 +30,15 @@ export function CategoryCard({ category }: { category: CategoryDefinition }) {
       <Card className="h-full card-hover">
         <CardHeader>
           <div className="mb-3 flex items-center justify-between">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-cyan-500/10 text-primary transition-all duration-300 group-hover:from-primary group-hover:to-blue-600 group-hover:text-primary-foreground group-hover:shadow-lg group-hover:shadow-primary/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-cyan-500/10 text-primary transition-all duration-300 group-hover:from-primary group-hover:to-blue-600 group-hover:text-primary-foreground">
               <Icon className="h-6 w-6" />
             </div>
             <ArrowRight className="h-5 w-5 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:text-primary" />
           </div>
-          <CardTitle className="text-lg">{category.name}</CardTitle>
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+            {category.name}
+          </p>
+          <CardTitle className="text-lg leading-snug">{category.useCaseLabel}</CardTitle>
           <CardDescription className="line-clamp-2">{category.description}</CardDescription>
         </CardHeader>
         <CardContent>

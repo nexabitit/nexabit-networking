@@ -7,7 +7,7 @@ export const maxDuration = 30;
 type Params = { params: Promise<{ action?: string[] }> };
 
 async function handle(request: Request, action: string) {
-  const limited = checkRateLimit(request);
+  const limited = await checkRateLimit(request);
   if (limited) return limited;
 
   const params = getSearchParams(request);

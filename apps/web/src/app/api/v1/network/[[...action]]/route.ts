@@ -5,6 +5,7 @@ import {
   traceroute,
   whois,
   asnLookup,
+  httpSecurityHeaders,
 } from '@nexabit/api-core';
 import { json, error, checkRateLimit, getSearchParams, logToolUsage, corsOptions } from '@/lib/api/handler';
 
@@ -14,7 +15,7 @@ export const maxDuration = 30;
 type Params = { params: Promise<{ action?: string[] }> };
 
 async function handle(request: Request, action: string) {
-  const limited = checkRateLimit(request);
+  const limited = await checkRateLimit(request);
   if (limited) return limited;
 
   const params = getSearchParams(request);
@@ -61,9 +62,15 @@ async function handle(request: Request, action: string) {
       await logToolUsage('asn-lookup', request);
       return json(await asnLookup(query));
     }
+    case 'http-headers': {
+      const url = params.get('url');
+      if (!url) return error('url parameter is required');
+      await logToolUsage('http-security-headers', request);
+      return json(await httpSecurityHeaders(url));
+    }
     default:
       return error(
-        `Unknown network action: ${action}. Use: ip-lookup, port-check, ping, traceroute, whois, asn-lookup`,
+        `Unknown network action: ${action}. Use: ip-lookup, port-check, ping, traceroute, whois, asn-lookup, http-headers`,
         404,
       );
   }
@@ -75,7 +82,7 @@ export async function GET(request: Request, { params }: Params) {
   if (!slug) {
     return json({
       module: 'network',
-      actions: ['ip-lookup', 'port-check', 'ping', 'traceroute', 'whois', 'asn-lookup'],
+      actions: ['ip-lookup', 'port-check', 'ping', 'traceroute', 'whois', 'asn-lookup', 'http-headers'],
     });
   }
   return handle(request, slug);

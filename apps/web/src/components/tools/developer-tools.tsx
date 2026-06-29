@@ -1,42 +1,45 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label, Select, Badge } from '@/components/ui/label';
+import { Label, Select } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { validateJson, calculateChmod, validateCron } from '@nexabit/validators';
-import { testRegex, generateCurl, formatXml, validateDockerCompose, validateKubernetesYaml } from '@nexabit/networking';
+import {
+  testRegex,
+  generateCurl,
+  formatXml,
+  validateDockerCompose,
+  validateKubernetesYaml,
+} from '@nexabit/networking';
 import { ApiToolShell, useApiTool, API_URL } from './api-tool-shell';
+import { ClientToolShell } from './client-tool-shell';
 
 export function JsonFormatterTool() {
   const [input, setInput] = useState('{"hello":"world"}');
   const result = validateJson(input);
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">JSON Formatter</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={8} />
-        <Badge variant={result.valid ? 'success' : 'destructive'}>{result.valid ? 'Valid JSON' : 'Invalid'}</Badge>
-        {result.formatted && <Textarea readOnly value={result.formatted} rows={8} />}
-        {result.error && <p className="text-sm text-destructive">{result.error}</p>}
-      </CardContent>
-    </Card>
+    <ClientToolShell title="JSON Formatter" result={result} resultFilename="json" showResults>
+      <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={8} className="font-mono" />
+    </ClientToolShell>
   );
 }
 
 export function YamlFormatterTool() {
   const [input, setInput] = useState('key: value\nlist:\n  - item1');
+
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">YAML Formatter</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={10} className="font-mono" />
-        <p className="text-sm text-muted-foreground">YAML validation uses structure checks. For full validation, use Docker Compose or Kubernetes validators.</p>
-      </CardContent>
-    </Card>
+    <ClientToolShell
+      title="YAML Formatter"
+      description="Edit YAML below. Use Docker Compose or Kubernetes validators for full schema checks."
+      result={{ valid: true, output: input, label: 'YAML content' }}
+      resultFilename="yaml"
+      showResults
+    >
+      <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={10} className="font-mono" />
+    </ClientToolShell>
   );
 }
 
@@ -45,14 +48,9 @@ export function XmlFormatterTool() {
   const result = formatXml(input);
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">XML Formatter</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={6} />
-        <Badge variant={result.valid ? 'success' : 'destructive'}>{result.valid ? 'Formatted' : 'Error'}</Badge>
-        {result.formatted && <Textarea readOnly value={result.formatted} rows={8} />}
-      </CardContent>
-    </Card>
+    <ClientToolShell title="XML Formatter" result={result} resultFilename="xml" showResults>
+      <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={6} className="font-mono" />
+    </ClientToolShell>
   );
 }
 
@@ -63,30 +61,24 @@ export function RegexTesterTool() {
   const result = testRegex(pattern, flags, text);
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">Regex Tester</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label>Pattern</Label>
-            <Input value={pattern} onChange={(e) => setPattern(e.target.value)} className="font-mono" />
-          </div>
-          <div className="space-y-2">
-            <Label>Flags</Label>
-            <Input value={flags} onChange={(e) => setFlags(e.target.value)} placeholder="gim" />
-          </div>
+    <ClientToolShell
+      title="Regex Tester"
+      result={result.valid ? result : { valid: false, error: result.error }}
+      resultFilename="regex"
+      showResults
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label>Pattern</Label>
+          <Input value={pattern} onChange={(e) => setPattern(e.target.value)} className="font-mono" />
         </div>
-        <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} />
-        {result.valid ? (
-          <div>
-            <Badge variant="success">{result.matches.length} match(es)</Badge>
-            <pre className="mt-2 rounded-md bg-muted p-4 text-sm font-mono">{JSON.stringify(result.matches, null, 2)}</pre>
-          </div>
-        ) : (
-          <Badge variant="destructive">{result.error}</Badge>
-        )}
-      </CardContent>
-    </Card>
+        <div className="space-y-2">
+          <Label>Flags</Label>
+          <Input value={flags} onChange={(e) => setFlags(e.target.value)} placeholder="gim" />
+        </div>
+      </div>
+      <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} />
+    </ClientToolShell>
   );
 }
 
@@ -97,29 +89,30 @@ export function CurlGeneratorTool() {
   const [body, setBody] = useState('');
 
   const headerObj = Object.fromEntries(
-    headers.split('\n').filter(Boolean).map((line) => {
-      const [k, ...v] = line.split(':');
-      return [k.trim(), v.join(':').trim()];
-    }),
+    headers
+      .split('\n')
+      .filter(Boolean)
+      .map((line) => {
+        const [k, ...v] = line.split(':');
+        return [k.trim(), v.join(':').trim()];
+      }),
   );
 
   const curl = generateCurl({ method, url, headers: headerObj, body: body || undefined });
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">cURL Generator</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Select value={method} onChange={(e) => setMethod(e.target.value)}>
-            {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => <option key={m} value={m}>{m}</option>)}
-          </Select>
-          <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL" />
-        </div>
-        <Textarea value={headers} onChange={(e) => setHeaders(e.target.value)} placeholder="Headers (one per line)" rows={3} />
-        <Textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Body (optional)" rows={3} />
-        <pre className="overflow-auto rounded-md bg-muted p-4 text-sm font-mono">{curl}</pre>
-      </CardContent>
-    </Card>
+    <ClientToolShell title="cURL Generator" result={{ curl }} resultFilename="curl" showResults>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Select value={method} onChange={(e) => setMethod(e.target.value)}>
+          {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </Select>
+        <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL" />
+      </div>
+      <Textarea value={headers} onChange={(e) => setHeaders(e.target.value)} placeholder="Headers (one per line)" rows={3} />
+      <Textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Body (optional)" rows={3} />
+    </ClientToolShell>
   );
 }
 
@@ -127,19 +120,28 @@ export function WebhookTesterTool() {
   const [url, setUrl] = useState('');
   const [method, setMethod] = useState('POST');
   const [body, setBody] = useState('{}');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/dev/webhook-test`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, method, headers: { 'Content-Type': 'application/json' }, body }),
-    }).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/dev/webhook-test`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url,
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body,
+        }),
+      }).then((r) => r.json()),
+    () => url,
   );
 
   return (
-    <ApiToolShell title="Webhook Tester" onSubmit={run} loading={loading} result={result}>
+    <ApiToolShell title="Webhook Tester" onSubmit={run} loading={loading} result={result} resultFilename="webhook">
       <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Webhook URL" />
       <Select value={method} onChange={(e) => setMethod(e.target.value)}>
-        {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => <option key={m} value={m}>{m}</option>)}
+        {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
+          <option key={m} value={m}>{m}</option>
+        ))}
       </Select>
       <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={4} />
     </ApiToolShell>
@@ -151,20 +153,14 @@ export function ChmodCalculatorTool() {
   const result = calculateChmod(input);
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">chmod Calculator</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="755 or rwxr-xr-x" className="font-mono" />
-        {result.valid ? (
-          <div className="grid gap-2 sm:grid-cols-2">
-            <p>Numeric: <strong className="font-mono">{result.numeric}</strong></p>
-            <p>Symbolic: <strong className="font-mono">{result.symbolic}</strong></p>
-          </div>
-        ) : (
-          <Badge variant="destructive">{result.error}</Badge>
-        )}
-      </CardContent>
-    </Card>
+    <ClientToolShell title="chmod Calculator" result={result} resultFilename="chmod" showResults>
+      <Input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="755 or rwxr-xr-x"
+        className="font-mono"
+      />
+    </ClientToolShell>
   );
 }
 
@@ -173,17 +169,14 @@ export function CronGeneratorTool() {
   const result = validateCron(expression);
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">Cron Expression</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <Input value={expression} onChange={(e) => setExpression(e.target.value)} className="font-mono" placeholder="0 0 * * *" />
-        {result.valid ? (
-          <p className="text-sm text-muted-foreground">{result.description}</p>
-        ) : (
-          <Badge variant="destructive">{result.error}</Badge>
-        )}
-      </CardContent>
-    </Card>
+    <ClientToolShell title="Cron Expression Generator" result={result} resultFilename="cron" showResults>
+      <Input
+        value={expression}
+        onChange={(e) => setExpression(e.target.value)}
+        className="font-mono"
+        placeholder="0 0 * * *"
+      />
+    </ClientToolShell>
   );
 }
 
@@ -192,13 +185,9 @@ export function DockerComposeValidatorTool() {
   const result = validateDockerCompose(input);
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">Docker Compose Validator</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={10} />
-        <Badge variant={result.valid ? 'success' : 'destructive'}>{result.valid ? `Valid (${result.services?.join(', ')})` : result.error}</Badge>
-      </CardContent>
-    </Card>
+    <ClientToolShell title="Docker Compose Validator" result={result} resultFilename="docker-compose" showResults>
+      <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={10} className="font-mono" />
+    </ClientToolShell>
   );
 }
 
@@ -207,16 +196,8 @@ export function KubernetesYamlValidatorTool() {
   const result = validateKubernetesYaml(input);
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-lg">Kubernetes YAML Validator</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={10} />
-        {result.valid ? (
-          <p className="text-sm">Valid <strong>{result.kind}</strong> ({result.apiVersion})</p>
-        ) : (
-          <Badge variant="destructive">{result.error}</Badge>
-        )}
-      </CardContent>
-    </Card>
+    <ClientToolShell title="Kubernetes YAML Validator" result={result} resultFilename="kubernetes" showResults>
+      <Textarea value={input} onChange={(e) => setInput(e.target.value)} rows={10} className="font-mono" />
+    </ClientToolShell>
   );
 }

@@ -16,7 +16,7 @@ export async function GET(_request: Request, { params }: Params) {
 }
 
 export async function POST(request: Request, { params }: Params) {
-  const limited = checkRateLimit(request);
+  const limited = await checkRateLimit(request);
   if (limited) return limited;
 
   const { action } = await params;

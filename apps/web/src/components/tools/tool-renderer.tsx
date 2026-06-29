@@ -1,7 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { getToolBySlug } from '@nexabit/shared';
 import { Card, CardContent } from '@/components/ui/card';
+import { ToolSessionProvider } from './tool-session-context';
 
 const toolComponents: Record<string, React.ComponentType> = {
   'ip-lookup': dynamic(() => import('./ip-lookup').then((m) => m.IpLookupTool)),
@@ -39,10 +41,14 @@ const toolComponents: Record<string, React.ComponentType> = {
   'docker-compose-validator': dynamic(() => import('./docker-compose-validator').then((m) => m.DockerComposeValidatorTool)),
   'kubernetes-yaml-validator': dynamic(() => import('./kubernetes-yaml-validator').then((m) => m.KubernetesYamlValidatorTool)),
   'csr-generator': dynamic(() => import('./csr-generator').then((m) => m.CsrGeneratorTool)),
+  'http-security-headers': dynamic(() => import('./http-security-headers').then((m) => m.HttpSecurityHeadersTool)),
+  'bulk-dns-lookup': dynamic(() => import('./bulk-dns-lookup').then((m) => m.BulkDnsLookupTool)),
+  'ssl-expiry-monitor': dynamic(() => import('./ssl-expiry-monitor').then((m) => m.SslExpiryMonitorTool)),
 };
 
 export function ToolRenderer({ slug }: { slug: string }) {
   const Component = toolComponents[slug];
+  const tool = getToolBySlug(slug);
 
   if (!Component) {
     return (
@@ -54,5 +60,9 @@ export function ToolRenderer({ slug }: { slug: string }) {
     );
   }
 
-  return <Component />;
+  return (
+    <ToolSessionProvider slug={slug} toolName={tool?.name ?? slug}>
+      <Component />
+    </ToolSessionProvider>
+  );
 }

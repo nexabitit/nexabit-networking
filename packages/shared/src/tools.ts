@@ -21,6 +21,7 @@ export interface ToolDefinition {
 export interface CategoryDefinition {
   slug: ToolCategory;
   name: string;
+  useCaseLabel: string;
   description: string;
   icon: string;
 }
@@ -29,37 +30,49 @@ export const CATEGORIES: CategoryDefinition[] = [
   {
     slug: 'networking',
     name: 'Networking',
-    description: 'IP, subnet, port, ping, traceroute, and WHOIS utilities',
+    useCaseLabel: 'Investigate IPs and connectivity',
+    description:
+      'IP lookup, subnetting, ping, traceroute, port checks, WHOIS, and ASN utilities for connectivity troubleshooting.',
     icon: 'Network',
   },
   {
     slug: 'dns',
     name: 'DNS',
-    description: 'DNS record lookup, propagation, and email authentication checks',
+    useCaseLabel: 'Verify DNS and email records',
+    description:
+      'DNS lookup, propagation, MX, SPF, DKIM, and DMARC workflows for domain and email authentication validation.',
     icon: 'Globe',
   },
   {
     slug: 'ssl',
     name: 'SSL / TLS',
-    description: 'Certificate inspection, CSR generation, and PEM decoding',
+    useCaseLabel: 'Inspect certificates and trust',
+    description:
+      'SSL inspection, certificate expiry, PEM decoding, and CSR generation for TLS trust validation.',
     icon: 'ShieldCheck',
   },
   {
     slug: 'security',
     name: 'Security',
-    description: 'Passwords, hashing, encoding, JWT, and UUID tools',
+    useCaseLabel: 'Validate credentials and tokens',
+    description:
+      'Password generation, hashing, JWT decoding, Base64, and UUID tools for credential and token workflows.',
     icon: 'Lock',
   },
   {
     slug: 'developer',
     name: 'Developer',
-    description: 'JSON, YAML, regex, curl, and webhook utilities',
+    useCaseLabel: 'Parse and transform payloads',
+    description:
+      'JSON, YAML, regex, cURL, and webhook utilities to accelerate API and payload workflows.',
     icon: 'Code',
   },
   {
     slug: 'devops',
     name: 'Linux & DevOps',
-    description: 'chmod, cron, Docker Compose, and Kubernetes validators',
+    useCaseLabel: 'Validate infrastructure syntax',
+    description:
+      'chmod, cron, Docker Compose, and Kubernetes validators for deployment readiness checks.',
     icon: 'Terminal',
   },
 ];
@@ -152,7 +165,16 @@ export const TOOLS: ToolDefinition[] = [
     category: 'networking',
     keywords: ['asn', 'autonomous system', 'bgp'],
     apiPath: '/api/v1/network/asn-lookup',
-    relatedTools: ['ip-lookup', 'whois'],
+    relatedTools: ['ip-lookup', 'whois', 'http-security-headers'],
+  },
+  {
+    slug: 'http-security-headers',
+    name: 'HTTP Security Headers Checker',
+    description: 'Analyze HSTS, CSP, X-Frame-Options, and other security headers for any URL.',
+    category: 'networking',
+    keywords: ['http', 'headers', 'security', 'hsts', 'csp'],
+    apiPath: '/api/v1/network/http-headers',
+    relatedTools: ['ssl-checker', 'port-checker'],
   },
   // DNS
   {
@@ -198,7 +220,16 @@ export const TOOLS: ToolDefinition[] = [
     category: 'dns',
     keywords: ['dns', 'propagation', 'global'],
     apiPath: '/api/v1/dns/propagation',
-    relatedTools: ['dns-lookup'],
+    relatedTools: ['dns-lookup', 'bulk-dns-lookup'],
+  },
+  {
+    slug: 'bulk-dns-lookup',
+    name: 'Bulk DNS Lookup',
+    description: 'Look up DNS records for multiple domains from a list or CSV upload.',
+    category: 'dns',
+    keywords: ['dns', 'bulk', 'csv', 'msp', 'audit'],
+    apiPath: '/api/v1/dns/bulk',
+    relatedTools: ['dns-lookup', 'dns-propagation'],
   },
   // SSL
   {
@@ -217,7 +248,16 @@ export const TOOLS: ToolDefinition[] = [
     category: 'ssl',
     keywords: ['ssl', 'expiry', 'expiration'],
     apiPath: '/api/v1/ssl/expiry',
-    relatedTools: ['ssl-checker'],
+    relatedTools: ['ssl-checker', 'ssl-expiry-monitor'],
+  },
+  {
+    slug: 'ssl-expiry-monitor',
+    name: 'SSL Expiry Monitor',
+    description: 'Track multiple hostnames and alert when certificates are expiring soon.',
+    category: 'ssl',
+    keywords: ['ssl', 'monitor', 'expiry', 'watchlist', 'alert'],
+    clientOnly: true,
+    relatedTools: ['ssl-expiry', 'ssl-checker'],
   },
   {
     slug: 'csr-generator',
@@ -424,6 +464,50 @@ export const SITE_CONFIG = {
   githubUrl: 'https://github.com/nexabitit/nexabit-networking',
   description:
     'Nexabit Network Utilities is a free, open-source platform with 35+ professional networking, DNS, SSL, security, and developer tools. Built by Nexabit IT Solutions for engineers, sysadmins, and DevOps teams.',
+  heroHeadline: 'Free network, DNS, SSL, and diagnostics tools for IT teams.',
+  heroSubline:
+    'Run fast checks, troubleshoot issues, validate configurations, and automate repeatable infrastructure tasks from one toolkit.',
+  trustLine: '38+ free tools • open source • built by Nexabit IT Solutions',
+  lastUpdated: '2026-06',
   tagline: 'Nexabit Network Utilities',
-  subtagline: 'Free professional networking, DNS, SSL & DevOps tools — open source.',
+  subtagline:
+    'Run fast checks, troubleshoot issues, validate configurations, and automate repeatable infrastructure tasks from one toolkit.',
 } as const;
+
+export const QUICK_LAUNCH = [
+  { label: 'IP', slug: 'ip-lookup' },
+  { label: 'DNS', slug: 'dns-lookup' },
+  { label: 'SSL', slug: 'ssl-checker' },
+  { label: 'Ping', slug: 'ping' },
+  { label: 'Traceroute', slug: 'traceroute' },
+  { label: 'WHOIS', slug: 'whois' },
+  { label: 'JWT', slug: 'jwt-decoder' },
+  { label: 'CIDR', slug: 'cidr-calculator' },
+] as const;
+
+export const WORKFLOW_PATHS = [
+  {
+    title: 'DNS troubleshooting',
+    description: 'Lookup records, check propagation, validate SPF, DKIM, and DMARC.',
+    href: '/category/dns',
+    tools: ['dns-lookup', 'dns-propagation', 'spf-checker', 'dmarc-checker'],
+  },
+  {
+    title: 'SSL inspection',
+    description: 'Check certificates, expiry dates, and decode PEM files.',
+    href: '/category/ssl',
+    tools: ['ssl-checker', 'ssl-expiry', 'ssl-expiry-monitor', 'pem-decoder'],
+  },
+  {
+    title: 'IP investigation',
+    description: 'Geolocate IPs, WHOIS, ASN lookup, and subnet planning.',
+    href: '/category/networking',
+    tools: ['ip-lookup', 'whois', 'asn-lookup', 'cidr-calculator'],
+  },
+  {
+    title: 'DevOps validation',
+    description: 'chmod, cron, Docker Compose, and Kubernetes YAML checks.',
+    href: '/category/devops',
+    tools: ['chmod-calculator', 'cron-generator', 'docker-compose-validator'],
+  },
+] as const;

@@ -134,3 +134,28 @@ export async function dnsPropagation(domain: string, type: DnsType) {
 
   return { success: true, domain, type, results };
 }
+
+export async function dnsBulkLookup(domains: string[], type: DnsType = 'A') {
+  const unique = [...new Set(domains.map((d) => d.trim().toLowerCase()).filter(Boolean))].slice(
+    0,
+    50,
+  );
+
+  if (unique.length === 0) {
+    return { success: false, error: 'At least one domain is required (max 50).' };
+  }
+
+  const results = await Promise.all(unique.map((domain) => dnsLookup(domain, type)));
+
+  const succeeded = results.filter((r) => r.success).length;
+  const failed = results.length - succeeded;
+
+  return {
+    success: true,
+    type,
+    total: results.length,
+    succeeded,
+    failed,
+    results,
+  };
+}

@@ -8,8 +8,10 @@ import { ApiToolShell, useApiTool, API_URL } from './api-tool-shell';
 export function PortCheckerTool() {
   const [host, setHost] = useState('google.com');
   const [port, setPort] = useState('443');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/network/port-check?host=${encodeURIComponent(host)}&port=${port}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/network/port-check?host=${encodeURIComponent(host)}&port=${port}`).then((r) => r.json()),
+    () => `${host}:${port}`,
   );
 
   return (
@@ -30,8 +32,9 @@ export function PortCheckerTool() {
 
 export function PingTool() {
   const [host, setHost] = useState('8.8.8.8');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/network/ping?host=${encodeURIComponent(host)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () => fetch(`${API_URL}/api/v1/network/ping?host=${encodeURIComponent(host)}`).then((r) => r.json()),
+    () => host,
   );
 
   return (
@@ -46,8 +49,10 @@ export function PingTool() {
 
 export function TracerouteTool() {
   const [host, setHost] = useState('8.8.8.8');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/network/traceroute?host=${encodeURIComponent(host)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/network/traceroute?host=${encodeURIComponent(host)}`).then((r) => r.json()),
+    () => host,
   );
 
   return (
@@ -62,8 +67,9 @@ export function TracerouteTool() {
 
 export function WhoisTool() {
   const [query, setQuery] = useState('google.com');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/network/whois?query=${encodeURIComponent(query)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () => fetch(`${API_URL}/api/v1/network/whois?query=${encodeURIComponent(query)}`).then((r) => r.json()),
+    () => query,
   );
 
   return (
@@ -78,8 +84,10 @@ export function WhoisTool() {
 
 export function AsnLookupTool() {
   const [query, setQuery] = useState('AS15169');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/network/asn-lookup?query=${encodeURIComponent(query)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/network/asn-lookup?query=${encodeURIComponent(query)}`).then((r) => r.json()),
+    () => query,
   );
 
   return (

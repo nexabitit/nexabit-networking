@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { getToolBySlug, getRelatedTools, TOOLS, SITE_CONFIG } from '@nexabit/shared';
+import { getToolBySlug, getRelatedTools, getCategoryBySlug, TOOLS, SITE_CONFIG } from '@nexabit/shared';
 import { ToolRenderer } from '@/components/tools/tool-renderer';
+import { ToolPageActions } from '@/components/tools/tool-page-actions';
 import { ToolCard } from '@/components/tool-card';
 import { FaqAccordion } from '@/components/home/faq-accordion';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -70,6 +71,7 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
 
   const related = getRelatedTools(slug);
   const faq = tool.faq?.length ? tool.faq : defaultFaq(tool);
+  const category = getCategoryBySlug(tool.category);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -84,8 +86,8 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
           </li>
           <li aria-hidden>/</li>
           <li>
-            <Link href={`/category/${tool.category}`} className="capitalize hover:text-primary">
-              {tool.category}
+            <Link href={`/category/${tool.category}`} className="hover:text-primary">
+              {category?.useCaseLabel ?? tool.category}
             </Link>
           </li>
           <li aria-hidden>/</li>
@@ -111,9 +113,15 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
             </Link>{' '}
             — free, open-source tools by {SITE_CONFIG.company}.
           </p>
+          <ToolPageActions toolSlug={slug} />
         </header>
 
         <ToolRenderer slug={slug} />
+
+        <section className="mt-10 rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+          <strong className="text-foreground">Tip:</strong> Results open in Visual mode (tables and cards). Use
+          the JSON tab or Copy/Download to export raw output for tickets and runbooks.
+        </section>
 
         <section className="mt-12" aria-labelledby="tool-faq">
           <h2 id="tool-faq" className="mb-4 text-2xl font-bold">

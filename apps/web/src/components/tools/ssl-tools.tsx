@@ -7,8 +7,10 @@ import { ApiToolShell, useApiTool, API_URL } from './api-tool-shell';
 
 export function SslCheckerTool() {
   const [hostname, setHostname] = useState('google.com');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/ssl/check?hostname=${encodeURIComponent(hostname)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/ssl/check?hostname=${encodeURIComponent(hostname)}`).then((r) => r.json()),
+    () => hostname,
   );
 
   return (
@@ -23,8 +25,10 @@ export function SslCheckerTool() {
 
 export function SslExpiryTool() {
   const [hostname, setHostname] = useState('google.com');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/ssl/expiry?hostname=${encodeURIComponent(hostname)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/ssl/expiry?hostname=${encodeURIComponent(hostname)}`).then((r) => r.json()),
+    () => hostname,
   );
 
   return (

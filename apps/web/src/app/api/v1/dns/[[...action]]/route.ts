@@ -4,6 +4,7 @@ import {
   dkimCheck,
   dmarcCheck,
   dnsPropagation,
+  dnsBulkLookup,
   type DnsType,
 } from '@nexabit/api-core';
 import { json, error, checkRateLimit, getSearchParams, logToolUsage, corsOptions } from '@/lib/api/handler';
@@ -14,7 +15,7 @@ export const maxDuration = 30;
 type Params = { params: Promise<{ action?: string[] }> };
 
 async function handle(request: Request, action: string) {
-  const limited = checkRateLimit(request);
+  const limited = await checkRateLimit(request);
   if (limited) return limited;
 
   const params = getSearchParams(request);
@@ -52,9 +53,12 @@ async function handle(request: Request, action: string) {
       await logToolUsage('dns-propagation', request);
       return json(await dnsPropagation(domain, type));
     }
+    case 'bulk': {
+      return error('Use POST /api/v1/dns/bulk with JSON body { domains: string[], type?: string }', 405);
+    }
     default:
       return error(
-        `Unknown dns action: ${action}. Use: lookup, spf, dkim, dmarc, propagation`,
+        `Unknown dns action: ${action}. Use: lookup, spf, dkim, dmarc, propagation, bulk`,
         404,
       );
   }
@@ -66,10 +70,37 @@ export async function GET(request: Request, { params }: Params) {
   if (!slug) {
     return json({
       module: 'dns',
-      actions: ['lookup', 'spf', 'dkim', 'dmarc', 'propagation'],
+      actions: ['lookup', 'spf', 'dkim', 'dmarc', 'propagation', 'bulk'],
     });
   }
   return handle(request, slug);
+}
+
+export async function POST(request: Request, { params }: Params) {
+  const limited = await checkRateLimit(request);
+  if (limited) return limited;
+
+  const { action } = await params;
+  const slug = action?.[0];
+  if (slug !== 'bulk') {
+    return error('Unknown dns POST action. Use: bulk', 404);
+  }
+
+  let body: { domains?: string[]; type?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return error('Invalid JSON body');
+  }
+
+  const domains = body.domains;
+  if (!Array.isArray(domains) || domains.length === 0) {
+    return error('domains array is required');
+  }
+
+  const type = (body.type || 'A') as DnsType;
+  await logToolUsage('bulk-dns-lookup', request);
+  return json(await dnsBulkLookup(domains, type));
 }
 
 export async function OPTIONS() {

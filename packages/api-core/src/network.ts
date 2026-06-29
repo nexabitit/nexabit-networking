@@ -101,6 +101,7 @@ export async function asnLookup(query: string) {
 
     const response = await fetch(url);
     const data = (await response.json()) as { data?: unknown };
+    return { success: true, query, data: data.data ?? data };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : 'ASN lookup failed' };
   }

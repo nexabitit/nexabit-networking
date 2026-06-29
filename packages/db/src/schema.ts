@@ -8,9 +8,18 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const teams = pgTable('teams', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  ownerEmail: text('owner_email').notNull(),
+  tier: text('tier').notNull().default('free'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
 export const apiKeys = pgTable('api_keys', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  teamId: uuid('team_id').references(() => teams.id, { onDelete: 'set null' }),
   keyHash: text('key_hash').notNull().unique(),
   name: text('name').notNull(),
   tier: text('tier').notNull().default('free'),

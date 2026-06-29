@@ -10,8 +10,10 @@ const RECORD_TYPES = ['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA', 'CNAME', 'SRV'];
 export function DnsLookupTool() {
   const [domain, setDomain] = useState('google.com');
   const [type, setType] = useState('A');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/dns/lookup?domain=${encodeURIComponent(domain)}&type=${type}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/dns/lookup?domain=${encodeURIComponent(domain)}&type=${type}`).then((r) => r.json()),
+    () => `${domain} (${type})`,
   );
 
   return (
@@ -36,8 +38,9 @@ export function DnsLookupTool() {
 
 export function SpfCheckerTool() {
   const [domain, setDomain] = useState('google.com');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/dns/spf?domain=${encodeURIComponent(domain)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () => fetch(`${API_URL}/api/v1/dns/spf?domain=${encodeURIComponent(domain)}`).then((r) => r.json()),
+    () => domain,
   );
 
   return (
@@ -53,8 +56,10 @@ export function SpfCheckerTool() {
 export function DkimCheckerTool() {
   const [domain, setDomain] = useState('google.com');
   const [selector, setSelector] = useState('google');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/dns/dkim?domain=${encodeURIComponent(domain)}&selector=${encodeURIComponent(selector)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/dns/dkim?domain=${encodeURIComponent(domain)}&selector=${encodeURIComponent(selector)}`).then((r) => r.json()),
+    () => `${domain} / ${selector}`,
   );
 
   return (
@@ -75,8 +80,9 @@ export function DkimCheckerTool() {
 
 export function DmarcCheckerTool() {
   const [domain, setDomain] = useState('google.com');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/dns/dmarc?domain=${encodeURIComponent(domain)}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () => fetch(`${API_URL}/api/v1/dns/dmarc?domain=${encodeURIComponent(domain)}`).then((r) => r.json()),
+    () => domain,
   );
 
   return (
@@ -92,8 +98,10 @@ export function DmarcCheckerTool() {
 export function DnsPropagationTool() {
   const [domain, setDomain] = useState('google.com');
   const [type, setType] = useState('A');
-  const { loading, result, run } = useApiTool(() =>
-    fetch(`${API_URL}/api/v1/dns/propagation?domain=${encodeURIComponent(domain)}&type=${type}`).then((r) => r.json()),
+  const { loading, result, run } = useApiTool(
+    () =>
+      fetch(`${API_URL}/api/v1/dns/propagation?domain=${encodeURIComponent(domain)}&type=${type}`).then((r) => r.json()),
+    () => `${domain} (${type})`,
   );
 
   return (

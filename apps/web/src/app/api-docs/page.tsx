@@ -14,14 +14,20 @@ const endpoints = [
   { method: 'GET', path: '/api/v1/network/traceroute?host={host}', desc: 'Traceroute (serverless: returns notice)' },
   { method: 'GET', path: '/api/v1/network/whois?query={query}', desc: 'WHOIS lookup' },
   { method: 'GET', path: '/api/v1/network/asn-lookup?query={query}', desc: 'ASN lookup' },
+  { method: 'GET', path: '/api/v1/network/http-headers?url={url}', desc: 'HTTP security headers analysis' },
   { method: 'GET', path: '/api/v1/dns/lookup?domain={domain}&type={type}', desc: 'DNS record lookup' },
   { method: 'GET', path: '/api/v1/dns/spf?domain={domain}', desc: 'SPF record check' },
   { method: 'GET', path: '/api/v1/dns/dkim?domain={domain}&selector={selector}', desc: 'DKIM check' },
   { method: 'GET', path: '/api/v1/dns/dmarc?domain={domain}', desc: 'DMARC check' },
   { method: 'GET', path: '/api/v1/dns/propagation?domain={domain}&type={type}', desc: 'DNS propagation' },
+  { method: 'POST', path: '/api/v1/dns/bulk', desc: 'Bulk DNS lookup (JSON body: domains[], type?)' },
   { method: 'GET', path: '/api/v1/ssl/check?hostname={hostname}', desc: 'SSL certificate check' },
   { method: 'GET', path: '/api/v1/ssl/expiry?hostname={hostname}', desc: 'SSL expiry check' },
   { method: 'POST', path: '/api/v1/dev/webhook-test', desc: 'Webhook HTTP test' },
+  { method: 'GET', path: '/api/v1/account/tiers', desc: 'List API rate tiers' },
+  { method: 'POST', path: '/api/v1/account/keys', desc: 'Create API key (requires DATABASE_URL)' },
+  { method: 'GET', path: '/api/v1/account/verify', desc: 'Verify API key (X-API-Key header)' },
+  { method: 'GET', path: '/api/v1/account/usage', desc: 'API key usage stats (7 days)' },
   { method: 'GET', path: '/api/v1/health', desc: 'Health check' },
 ];
 
@@ -57,7 +63,11 @@ export default function ApiDocsPage() {
             <strong>Serverless functions:</strong> 6 consolidated handlers (within Vercel Hobby 12-function limit).
           </div>
           <div>
-            <strong>Authentication:</strong> Optional API key via <code className="rounded bg-muted px-1">X-API-Key</code> header (Phase 2, Neon DB).
+            <strong>Authentication:</strong> Optional API key via{' '}
+            <code className="rounded bg-muted px-1">X-API-Key</code> header.{' '}
+            <Link href="/developers" className="text-primary hover:underline">
+              Create a key
+            </Link>
           </div>
         </CardContent>
       </Card>
