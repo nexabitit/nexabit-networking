@@ -1,0 +1,82 @@
+import Link from 'next/link';
+import { SITE_CONFIG } from '@nexabit/shared';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+export const metadata = {
+  title: 'API Documentation',
+  description: 'REST API documentation for Nexabit Network Utilities.',
+};
+
+const endpoints = [
+  { method: 'GET', path: '/api/v1/network/ip-lookup?ip={ip}', desc: 'IP geolocation lookup' },
+  { method: 'GET', path: '/api/v1/network/port-check?host={host}&port={port}', desc: 'TCP port check' },
+  { method: 'GET', path: '/api/v1/network/ping?host={host}', desc: 'ICMP ping' },
+  { method: 'GET', path: '/api/v1/network/traceroute?host={host}', desc: 'Network traceroute' },
+  { method: 'GET', path: '/api/v1/network/whois?query={query}', desc: 'WHOIS lookup' },
+  { method: 'GET', path: '/api/v1/network/asn-lookup?query={query}', desc: 'ASN lookup' },
+  { method: 'GET', path: '/api/v1/dns/lookup?domain={domain}&type={type}', desc: 'DNS record lookup' },
+  { method: 'GET', path: '/api/v1/dns/spf?domain={domain}', desc: 'SPF record check' },
+  { method: 'GET', path: '/api/v1/dns/dkim?domain={domain}&selector={selector}', desc: 'DKIM check' },
+  { method: 'GET', path: '/api/v1/dns/dmarc?domain={domain}', desc: 'DMARC check' },
+  { method: 'GET', path: '/api/v1/dns/propagation?domain={domain}&type={type}', desc: 'DNS propagation' },
+  { method: 'GET', path: '/api/v1/ssl/check?hostname={hostname}', desc: 'SSL certificate check' },
+  { method: 'GET', path: '/api/v1/ssl/expiry?hostname={hostname}', desc: 'SSL expiry check' },
+  { method: 'POST', path: '/api/v1/dev/webhook-test', desc: 'Webhook HTTP test' },
+  { method: 'GET', path: '/api/v1/health', desc: 'Health check' },
+];
+
+export default function ApiDocsPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="mb-2 text-3xl font-bold">API Documentation</h1>
+      <p className="mb-8 text-muted-foreground">
+        Public REST API for {SITE_CONFIG.name}. Rate limited to 60 requests per minute.
+      </p>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Getting Started</CardTitle>
+          <CardDescription>Base URL and authentication</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
+          <div>
+            <strong>Base URL:</strong>{' '}
+            <code className="rounded bg-muted px-2 py-1">{apiUrl}/api/v1</code>
+          </div>
+          <div>
+            <strong>OpenAPI Spec:</strong>{' '}
+            <Link href={`${apiUrl}/api/docs`} target="_blank" className="text-primary hover:underline">
+              {apiUrl}/api/docs
+            </Link>
+          </div>
+          <div>
+            <strong>Authentication:</strong> Optional API key via <code className="rounded bg-muted px-1">X-API-Key</code> header (premium tier).
+          </div>
+        </CardContent>
+      </Card>
+
+      <h2 className="mb-4 text-xl font-bold">Endpoints</h2>
+      <div className="space-y-3">
+        {endpoints.map((ep) => (
+          <Card key={ep.path}>
+            <CardContent className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <span
+                  className={`rounded px-2 py-0.5 text-xs font-bold ${
+                    ep.method === 'GET' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'
+                  }`}
+                >
+                  {ep.method}
+                </span>
+                <code className="text-sm">{ep.path}</code>
+              </div>
+              <span className="text-sm text-muted-foreground">{ep.desc}</span>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}

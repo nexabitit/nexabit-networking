@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: |
+          pnpm --filter @nexabit/shared build
+          pnpm --filter @nexabit/validators build
+          pnpm --filter @nexabit/crypto build
+          pnpm --filter @nexabit/networking build
+          pnpm --filter @nexabit/api-client build
+
+      - name: Run tests
+        run: pnpm --filter @nexabit/validators test
+
+      - name: Typecheck
+        run: |
+          pnpm --filter @nexabit/shared typecheck
+          pnpm --filter @nexabit/validators typecheck
+          pnpm --filter @nexabit/api typecheck
+          pnpm --filter @nexabit/web typecheck
+
+      - name: Build API
+        run: pnpm --filter @nexabit/api build
+
+      - name: Build Web
+        run: pnpm --filter @nexabit/web build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:4000
