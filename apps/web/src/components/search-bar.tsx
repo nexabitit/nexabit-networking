@@ -42,7 +42,7 @@ export function SearchBar({ autoFocus = false }: { autoFocus?: boolean }) {
           }}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 200)}
-          className="pl-10"
+          className="pl-10 h-12 rounded-xl border-border/80 bg-card shadow-sm focus-visible:ring-primary"
         />
       </div>
       {open && results.length > 0 && (

@@ -3,42 +3,43 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
+  --color-background: #fafbfc;
+  --color-foreground: #0c1222;
   --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
-  --color-primary: #2563eb;
+  --color-card-foreground: #0c1222;
+  --color-primary: #1d4ed8;
   --color-primary-foreground: #ffffff;
   --color-secondary: #f1f5f9;
-  --color-secondary-foreground: #0f172a;
-  --color-muted: #f8fafc;
-  --color-muted-foreground: #64748b;
-  --color-accent: #f1f5f9;
-  --color-accent-foreground: #0f172a;
+  --color-secondary-foreground: #0c1222;
+  --color-muted: #f4f6f8;
+  --color-muted-foreground: #5c6b7a;
+  --color-accent: #eff6ff;
+  --color-accent-foreground: #1e40af;
   --color-border: #e2e8f0;
   --color-input: #e2e8f0;
   --color-ring: #2563eb;
   --color-destructive: #ef4444;
-  --color-success: #22c55e;
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --radius: 0.5rem;
+  --color-success: #16a34a;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-inter), ui-sans-serif, sans-serif;
+  --radius: 0.75rem;
 }
 
 .dark {
-  --color-background: #020617;
-  --color-foreground: #f8fafc;
+  --color-background: #030712;
+  --color-foreground: #f1f5f9;
   --color-card: #0f172a;
-  --color-card-foreground: #f8fafc;
+  --color-card-foreground: #f1f5f9;
   --color-primary: #3b82f6;
   --color-primary-foreground: #ffffff;
   --color-secondary: #1e293b;
-  --color-secondary-foreground: #f8fafc;
-  --color-muted: #1e293b;
+  --color-secondary-foreground: #f1f5f9;
+  --color-muted: #111827;
   --color-muted-foreground: #94a3b8;
-  --color-accent: #1e293b;
-  --color-accent-foreground: #f8fafc;
-  --color-border: #334155;
-  --color-input: #334155;
+  --color-accent: #172554;
+  --color-accent-foreground: #93c5fd;
+  --color-border: #1e293b;
+  --color-input: #1e293b;
   --color-ring: #3b82f6;
 }
 
@@ -49,5 +50,84 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent;
+  }
+
+  .glass {
+    @apply border border-border/60 bg-card/80 backdrop-blur-xl;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5;
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgb(37 99 235 / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(37 99 235 / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-pulse-soft {
+    animation: pulseSoft 4s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseSoft {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-pulse-soft,
+  .card-hover {
+    animation: none;
+    transition: none;
   }
 }

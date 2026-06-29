@@ -1,27 +1,66 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { getToolBySlug, getRelatedTools, TOOLS, SITE_CONFIG } from '@nexabit/shared';
 import { ToolRenderer } from '@/components/tools/tool-renderer';
 import { ToolCard } from '@/components/tool-card';
+import { FaqAccordion } from '@/components/home/faq-accordion';
+import { JsonLd } from '@/components/seo/json-ld';
+import { toolJsonLd } from '@/lib/seo/json-ld';
 import { Badge } from '@/components/ui/label';
+
+const baseUrl = `https://${SITE_CONFIG.domain}`;
 
 export function generateStaticParams() {
   return TOOLS.map((tool) => ({ slug: tool.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const tool = getToolBySlug(slug);
   if (!tool) return {};
+
+  const title = `${tool.name} — Free Online Tool`;
+  const description = `${tool.description} Use ${tool.name} free on ${SITE_CONFIG.name}. No sign-up required.`;
+
   return {
-    title: tool.name,
-    description: tool.description,
-    keywords: tool.keywords,
+    title,
+    description,
+    keywords: [...tool.keywords, SITE_CONFIG.name, 'free online tool', tool.category],
+    alternates: { canonical: `${baseUrl}/tools/${slug}` },
     openGraph: {
       title: `${tool.name} | ${SITE_CONFIG.name}`,
-      description: tool.description,
+      description,
+      url: `${baseUrl}/tools/${slug}`,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
     },
   };
+}
+
+function defaultFaq(tool: { name: string; description: string; category: string }) {
+  return [
+    {
+      question: `What is ${tool.name}?`,
+      answer: `${tool.name} is a free online tool on ${SITE_CONFIG.name}. ${tool.description}`,
+    },
+    {
+      question: `Is ${tool.name} free?`,
+      answer: `Yes. ${tool.name} is completely free on ${SITE_CONFIG.name}, with no account required. The platform is open source under the MIT license.`,
+    },
+    {
+      question: `Who provides ${tool.name}?`,
+      answer: `${tool.name} is provided by ${SITE_CONFIG.name}, built and maintained by ${SITE_CONFIG.company}.`,
+    },
+  ];
 }
 
 export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -30,69 +69,72 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
   if (!tool) notFound();
 
   const related = getRelatedTools(slug);
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: tool.name,
-    description: tool.description,
-    applicationCategory: 'DeveloperApplication',
-    operatingSystem: 'Any',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    author: { '@type': 'Organization', name: SITE_CONFIG.company },
-  };
+  const faq = tool.faq?.length ? tool.faq : defaultFaq(tool);
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={toolJsonLd({ ...tool, faq })} />
 
-      <nav className="mb-6 text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">Home</Link>
-        {' / '}
-        <Link href={`/category/${tool.category}`} className="hover:text-foreground capitalize">
-          {tool.category}
-        </Link>
-        {' / '}
-        <span className="text-foreground">{tool.name}</span>
+      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
+        <ol className="flex flex-wrap items-center gap-1">
+          <li>
+            <Link href="/" className="hover:text-primary">
+              Home
+            </Link>
+          </li>
+          <li aria-hidden>/</li>
+          <li>
+            <Link href={`/category/${tool.category}`} className="capitalize hover:text-primary">
+              {tool.category}
+            </Link>
+          </li>
+          <li aria-hidden>/</li>
+          <li className="font-medium text-foreground">{tool.name}</li>
+        </ol>
       </nav>
 
-      <div className="mb-8">
-        <div className="mb-2 flex items-center gap-2">
-          <h1 className="text-3xl font-bold">{tool.name}</h1>
-          <Badge variant="secondary" className="capitalize">{tool.category}</Badge>
-        </div>
-        <p className="text-lg text-muted-foreground">{tool.description}</p>
-      </div>
-
-      <ToolRenderer slug={slug} />
-
-      {tool.faq && tool.faq.length > 0 && (
-        <section className="mt-12">
-          <h2 className="mb-4 text-xl font-bold">FAQ</h2>
-          <div className="space-y-4">
-            {tool.faq.map((item, i) => (
-              <div key={i} className="rounded-lg border border-border p-4">
-                <h3 className="mb-2 font-medium">{item.question}</h3>
-                <p className="text-sm text-muted-foreground">{item.answer}</p>
-              </div>
-            ))}
+      <article>
+        <header className="mb-8">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <h1 className="text-3xl font-bold md:text-4xl">{tool.name}</h1>
+            <Badge variant="secondary" className="capitalize">
+              {tool.category}
+            </Badge>
           </div>
-        </section>
-      )}
+          <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">
+            {tool.description}
+          </p>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Part of{' '}
+            <Link href="/" className="font-medium text-primary hover:underline">
+              {SITE_CONFIG.name}
+            </Link>{' '}
+            — free, open-source tools by {SITE_CONFIG.company}.
+          </p>
+        </header>
 
-      {related.length > 0 && (
-        <section className="mt-12">
-          <h2 className="mb-4 text-xl font-bold">Related Tools</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((t) => (
-              <ToolCard key={t.slug} tool={t} />
-            ))}
-          </div>
+        <ToolRenderer slug={slug} />
+
+        <section className="mt-12" aria-labelledby="tool-faq">
+          <h2 id="tool-faq" className="mb-4 text-2xl font-bold">
+            Frequently Asked Questions
+          </h2>
+          <FaqAccordion items={faq} />
         </section>
-      )}
+
+        {related.length > 0 && (
+          <section className="mt-12" aria-labelledby="related-tools">
+            <h2 id="related-tools" className="mb-4 text-2xl font-bold">
+              Related Tools
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((t) => (
+                <ToolCard key={t.slug} tool={t} />
+              ))}
+            </div>
+          </section>
+        )}
+      </article>
     </div>
   );
 }
