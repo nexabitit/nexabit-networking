@@ -2,7 +2,43 @@
 
 This guide covers deploying **network.nexabitit.com** on **Vercel (Hobby)** with **Neon PostgreSQL**.
 
-## Important: Why you saw 404 on Vercel
+## Fix: domain 404 `Cannot GET /`
+
+If the browser shows **404** and the response body is:
+
+```json
+{"message":"Cannot GET /","error":"Not Found","statusCode":404}
+```
+
+**Your domain is on the wrong Vercel project** (the old NestJS `nexabit-networking-api` deploy). That is not the website.
+
+### Fix in 3 steps
+
+1. **Vercel → `nexabit-networking-api` project** (or any API-only project)  
+   → **Settings → Domains** → **Remove** `network.nexabitit.com`
+
+2. **Create or open the WEB project** (Next.js from `apps/web`):
+   - **Import** repo `nexabitit/nexabit-networking` if needed
+   - **Root Directory:** `apps/web` ← required
+   - **Framework:** Next.js
+   - Env: `DATABASE_URL` (Neon pooled URL), leave `NEXT_PUBLIC_API_URL` empty
+   - **Deploy**
+
+3. **Vercel → WEB project → Settings → Domains** → **Add** `network.nexabitit.com`
+
+After DNS propagates (usually minutes), verify:
+
+| URL | Expected |
+|-----|----------|
+| `https://network.nexabitit.com/` | Homepage with tools |
+| `https://network.nexabitit.com/api` | JSON with `"name": "Nexabit Network Utilities API"` |
+| `https://network.nexabitit.com/api/v1/health` | `{"status":"ok",...}` |
+
+**Do not deploy `apps/api` to Vercel.** See `apps/api/VERCEL_DO_NOT_DEPLOY.md`.
+
+---
+
+## Important: Why NestJS fails on Vercel
 
 The NestJS app in `apps/api` is a **long-running server**. It does **not** work on Vercel serverless. Deploying it as a separate Vercel project (`nexabit-networking-api.vercel.app`) causes `Cannot GET /` because:
 
@@ -196,6 +232,7 @@ ORDER BY hits DESC;
 
 | Issue | Fix |
 |-------|-----|
+| `{"message":"Cannot GET /"}` JSON on homepage | Domain on **API** project — move to **web** project (`apps/web`) — see [top of this doc](#fix-domain-404-cannot-get-) |
 | `404 Cannot GET /` on API subdomain | Use single `apps/web` deploy; visit `/api` not `/` on old API project |
 | Build fails on Vercel | Ensure Root Directory = `apps/web` and install runs from monorepo root |
 | DNS lookup timeout | Vercel function timeout is 30s; check domain spelling |
