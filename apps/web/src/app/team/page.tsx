@@ -1,22 +1,11 @@
-import { SITE_CONFIG } from '@nexabit/shared';
-import { TeamDashboard } from '@/components/team/team-dashboard';
+import { TeamGatedDashboard } from '@/components/portal/team-portal';
 
 export const metadata = {
-  title: 'Team Dashboard — API Keys, MSP Exports & Monitoring',
-  description: `Team workspace for ${SITE_CONFIG.name}. API keys, usage tiers, MSP CSV/PDF exports, and shared monitoring.`,
+  title: 'Team Dashboard — Shared API Usage & MSP Exports',
+  description:
+    'Team workspace for IT teams and MSPs. Shared usage, exports, and monitoring — requires Growth or Team plan.',
 };
 
 export default function TeamPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 max-w-2xl">
-        <h1 className="text-3xl font-bold md:text-4xl">Team dashboard</h1>
-        <p className="mt-3 text-lg text-muted-foreground">
-          API keys, rate tiers, MSP exports, and team monitoring — built for IT teams and MSPs using{' '}
-          {SITE_CONFIG.name}.
-        </p>
-      </header>
-      <TeamDashboard />
-    </div>
-  );
+  return <TeamGatedDashboard />;
 }

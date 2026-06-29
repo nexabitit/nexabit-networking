@@ -161,7 +161,7 @@ export const HOME_FAQ = [
   {
     question: 'Are Nexabit Network Utilities free to use?',
     answer:
-      'Yes. Every tool on Nexabit Network Utilities is completely free. The project is open source under the MIT license with a public REST API.',
+      'Yes. Every browser-based tool on Nexabit Network Utilities is completely free with no login required. The REST API uses developer accounts with free and paid monthly plans — API keys are available after login and email verification.',
   },
   {
     question: 'What tools are available on Nexabit Network Utilities?',
@@ -171,7 +171,7 @@ export const HOME_FAQ = [
   {
     question: 'Does Nexabit Network Utilities have an API?',
     answer:
-      'Yes. Nexabit Network Utilities provides a REST API at /api/v1 with endpoints for DNS, SSL, network diagnostics, and webhooks. Documentation is available at /api-docs.',
+      'Yes. A Developer API is available at /api/v1 with free and paid access plans (from ₹0 to Team tiers). Documentation is at /api-docs. Create keys and manage usage from the developer portal after signing in.',
   },
   {
     question: 'Who built Nexabit Network Utilities?',

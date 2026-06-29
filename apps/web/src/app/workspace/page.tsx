@@ -1,4 +1,5 @@
 import { SITE_CONFIG } from '@nexabit/shared';
+import { PortalShell } from '@/components/portal/portal-shell';
 import { WorkspaceDashboard } from '@/components/workspace/workspace-dashboard';
 
 export const metadata = {
@@ -8,15 +9,12 @@ export const metadata = {
 
 export default function WorkspacePage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 max-w-2xl">
-        <h1 className="text-3xl font-bold md:text-4xl">Workspace</h1>
-        <p className="mt-3 text-lg text-muted-foreground">
-          Recent checks, favorites, and watchlists — stored in your browser for faster repeat
-          diagnostics. No account required.
-        </p>
-      </header>
+    <PortalShell
+      title="Workspace"
+      description="Recent checks, favorites, and watchlists — stored in your browser. No account required. Team shared watchlists and MSP exports are on the Team dashboard."
+      variant="team"
+    >
       <WorkspaceDashboard />
-    </div>
+    </PortalShell>
   );
 }

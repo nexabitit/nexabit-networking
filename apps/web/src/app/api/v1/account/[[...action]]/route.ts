@@ -1,9 +1,8 @@
-import { API_TIERS } from '@nexabit/shared';
+import { API_TIERS, getMaxApiKeysForTier, getRateLimitForTier, normalizeTierId } from '@nexabit/shared';
 import {
   corsOptions,
   error,
   generateApiKey,
-  getRateLimitForTier,
   hashApiKey,
   isValidEmail,
   json,
@@ -132,10 +131,13 @@ export async function POST(request: Request, { params }: Params) {
       .from(schema.apiKeys)
       .where(eq(schema.apiKeys.userId, userId));
 
-    const activeFree = existingKeys.filter((k) => k.isActive && k.tier === 'free');
-    if (activeFree.length >= 2) {
+    const activeKeys = existingKeys.filter((k) => k.isActive);
+    const tier = 'free';
+    const maxKeys = getMaxApiKeysForTier(tier);
+    const tierActive = activeKeys.filter((k) => normalizeTierId(k.tier) === tier);
+    if (tierActive.length >= maxKeys) {
       return error(
-        'Free tier allows up to 2 active API keys. Contact Nexabit IT Solutions for Pro or Team tiers.',
+        `Free tier allows ${maxKeys} active API key. Log in at /developers and upgrade for more keys.`,
         403,
       );
     }
@@ -151,7 +153,6 @@ export async function POST(request: Request, { params }: Params) {
 
     const plaintext = generateApiKey();
     const keyHash = await hashApiKey(plaintext);
-    const tier = 'free';
     const rateLimit = getRateLimitForTier(tier);
 
     const keyRow = await db

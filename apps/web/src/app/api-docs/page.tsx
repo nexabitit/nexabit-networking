@@ -38,7 +38,12 @@ export default function ApiDocsPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="mb-2 text-3xl font-bold">API Documentation</h1>
       <p className="mb-8 text-muted-foreground">
-        Public REST API for {SITE_CONFIG.name}. Hosted as Vercel serverless functions. Rate limited to 60 requests per minute per IP.
+        REST API for {SITE_CONFIG.name}. Browser tools are free for everyone. Programmatic access
+        uses developer accounts with tiered monthly plans —{' '}
+        <Link href="/developers/login" className="text-primary hover:underline">
+          get API access
+        </Link>{' '}
+        to create keys. Unauthenticated requests are rate limited per IP.
       </p>
 
       <Card className="mb-8">
@@ -63,10 +68,14 @@ export default function ApiDocsPage() {
             <strong>Serverless functions:</strong> 6 consolidated handlers (within Vercel Hobby 12-function limit).
           </div>
           <div>
-            <strong>Authentication:</strong> Optional API key via{' '}
+            <strong>Authentication:</strong> API key via{' '}
             <code className="rounded bg-muted px-1">X-API-Key</code> header.{' '}
+            <Link href="/developers/login" className="text-primary hover:underline">
+              Log in to create a key
+            </Link>
+            {' · '}
             <Link href="/developers" className="text-primary hover:underline">
-              Create a key
+              View API plans
             </Link>
           </div>
         </CardContent>

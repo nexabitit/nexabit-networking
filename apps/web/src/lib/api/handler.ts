@@ -51,7 +51,7 @@ function checkBucket(bucket: string, limit: number): NextResponse | null {
     return json(
       {
         success: false,
-        error: `Rate limit exceeded (${limit}/minute). Upgrade at /developers or contact Nexabit IT Solutions.`,
+        error: `Rate limit exceeded (${limit}/minute). Upgrade at /developers/dashboard or contact Nexabit IT Solutions.`,
         statusCode: 429,
       },
       429,

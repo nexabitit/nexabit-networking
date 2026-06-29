@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { SearchBar } from '@/components/search-bar';
 import { QuickLaunchChips } from '@/components/home/quick-launch-chips';
 import { SITE_CONFIG } from '@nexabit/shared';
-import { Code2, Zap } from 'lucide-react';
+import { Code2, Zap, ArrowRight } from 'lucide-react';
 
 export function HeroSection() {
   return (
@@ -40,11 +40,20 @@ export function HeroSection() {
               className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold transition-colors hover:bg-accent"
             >
               <Code2 className="h-4 w-4" />
-              Open API Docs
+              API Docs
+            </Link>
+            <Link
+              href="/developers/login"
+              className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
+            >
+              Get API access
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
-          <p className="mb-8 text-sm text-muted-foreground">{SITE_CONFIG.trustLine}</p>
+          <p className="mb-8 text-sm text-muted-foreground">
+            {SITE_CONFIG.trustLine} · Web tools free in browser · API keys after developer login
+          </p>
 
           <div className="mb-6 max-w-xl">
             <SearchBar />

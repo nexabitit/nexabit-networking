@@ -51,6 +51,12 @@ export function BusinessCta() {
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
+            href="/developers/login"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold hover:bg-accent"
+          >
+            Get API access
+          </Link>
+          <Link
             href="/api-docs"
             className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold hover:bg-accent"
           >

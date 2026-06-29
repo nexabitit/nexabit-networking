@@ -6,6 +6,7 @@ import { HeroSection } from '@/components/home/hero-section';
 import { TrustStrip } from '@/components/home/trust-strip';
 import { WorkflowPaths } from '@/components/home/workflow-paths';
 import { BusinessCta } from '@/components/home/business-cta';
+import { ApiAccessSection } from '@/components/home/api-access-section';
 import { RecentChecksPanel, FavoritesPanel } from '@/components/home/session-panels';
 import { FaqAccordion } from '@/components/home/faq-accordion';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -71,6 +72,7 @@ export default function HomePage() {
       </section>
 
       <BusinessCta />
+      <ApiAccessSection />
 
       <section className="border-t border-border bg-muted/30 py-16" id="faq">
         <div className="container mx-auto max-w-3xl px-4">

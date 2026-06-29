@@ -9,8 +9,6 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ApiKeyManager } from '@/components/team/api-key-manager';
-import { PricingTiers } from '@/components/team/pricing-tiers';
 import { WorkspaceDashboard } from '@/components/workspace/workspace-dashboard';
 import {
   exportAuditReportHtml,
@@ -42,7 +40,7 @@ export function TeamDashboard() {
 
   return (
     <div className="space-y-10">
-      <Card>
+      <Card id="members">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Users className="h-5 w-5" />
@@ -85,7 +83,7 @@ export function TeamDashboard() {
         </CardContent>
       </Card>
 
-      <section>
+      <section id="exports">
         <h2 className="mb-4 text-2xl font-bold">MSP exports</h2>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={() => exportWatchlistCsv(items)}>
@@ -117,13 +115,6 @@ export function TeamDashboard() {
           Audit report opens a print dialog — save as PDF from your browser. White-label exports
           available on Enterprise.
         </p>
-      </section>
-
-      <ApiKeyManager />
-
-      <section>
-        <h2 className="mb-4 text-2xl font-bold">Plans & rate limits</h2>
-        <PricingTiers highlight="team" />
       </section>
 
       <section>

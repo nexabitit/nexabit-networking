@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, Menu, X, Network, Search } from 'lucide-react';
+import { Moon, Sun, Menu, X, Network, Search, KeyRound } from 'lucide-react';
 import { useState } from 'react';
 import { SITE_CONFIG, CATEGORIES } from '@nexabit/shared';
 import { Button } from '@/components/ui/button';
@@ -60,6 +60,13 @@ export function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
+          <Link
+            href="/developers/login"
+            className="hidden items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/15 sm:inline-flex"
+          >
+            <KeyRound className="h-4 w-4" />
+            API access
+          </Link>
           <Button
             variant="ghost"
             size="icon"
@@ -110,6 +117,9 @@ export function Header() {
             </Link>
             <Link href="/developers" className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted" onClick={() => setMobileOpen(false)}>
               Developers
+            </Link>
+            <Link href="/developers/login" className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted" onClick={() => setMobileOpen(false)}>
+              API access (login)
             </Link>
             {CATEGORIES.map((cat) => (
               <Link
