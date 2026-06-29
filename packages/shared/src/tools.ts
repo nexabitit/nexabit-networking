@@ -455,6 +455,8 @@ export function getRelatedTools(slug: string): ToolDefinition[] {
     .filter((t): t is ToolDefinition => t !== undefined);
 }
 
+export const TOOL_COUNT = TOOLS.length;
+
 export const SITE_CONFIG = {
   name: 'Nexabit Network Utilities',
   shortName: 'Nexabit Network Utilities',
@@ -462,12 +464,11 @@ export const SITE_CONFIG = {
   company: 'Nexabit IT Solutions',
   companyUrl: 'https://nexabitit.com',
   githubUrl: 'https://github.com/nexabitit/nexabit-networking',
-  description:
-    'Nexabit Network Utilities is a free, open-source platform with 35+ professional networking, DNS, SSL, security, and developer tools. Built by Nexabit IT Solutions for engineers, sysadmins, and DevOps teams.',
+  description: `Nexabit Network Utilities is a free, open-source platform with ${TOOL_COUNT} professional networking, DNS, SSL, security, and developer tools. Browser tools are free; the Developer API offers free and paid monthly plans. Built by Nexabit IT Solutions.`,
   heroHeadline: 'Free network, DNS, SSL, and diagnostics tools for IT teams.',
   heroSubline:
     'Run fast checks, troubleshoot issues, validate configurations, and automate repeatable infrastructure tasks from one toolkit.',
-  trustLine: '38+ free tools • open source • built by Nexabit IT Solutions',
+  trustLine: `${TOOL_COUNT} free browser tools • open source • Developer API with free & paid plans`,
   lastUpdated: '2026-06',
   tagline: 'Nexabit Network Utilities',
   subtagline:

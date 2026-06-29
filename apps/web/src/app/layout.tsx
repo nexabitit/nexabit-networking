@@ -8,11 +8,12 @@ import { MicrosoftClarity } from '@/components/analytics/microsoft-clarity';
 import { SITE_CONFIG } from '@nexabit/shared';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-display',
   weight: ['500', '600', '700', '800'],
+  display: 'swap',
 });
 
 const baseUrl = `https://${SITE_CONFIG.domain}`;

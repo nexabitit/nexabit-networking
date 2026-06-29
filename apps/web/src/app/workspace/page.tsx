@@ -4,7 +4,8 @@ import { WorkspaceDashboard } from '@/components/workspace/workspace-dashboard';
 
 export const metadata = {
   title: 'Workspace — Recent Checks, Favorites & Watchlist',
-  description: `Your personal workspace on ${SITE_CONFIG.name}. Recent checks, favorites, and watchlists stored locally in your browser.`,
+  description: `Your personal workspace on ${SITE_CONFIG.name}. Recent checks, favorites, and watchlists stored locally in your browser — no account required.`,
+  alternates: { canonical: `https://${SITE_CONFIG.domain}/workspace` },
 };
 
 export default function WorkspacePage() {

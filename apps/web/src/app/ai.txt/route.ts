@@ -1,5 +1,4 @@
-import { SITE_CONFIG } from '@nexabit/shared';
-import { generateLlmsTxt } from '@/lib/seo/json-ld';
+import { SITE_CONFIG, TOOL_COUNT } from '@nexabit/shared';
 
 export const dynamic = 'force-static';
 
@@ -20,10 +19,12 @@ organization: ${SITE_CONFIG.company}
 organization-url: ${SITE_CONFIG.companyUrl}
 github: ${SITE_CONFIG.githubUrl}
 crawl: allowed
-tools-count: 35+
+tools-count: ${TOOL_COUNT}
+browser-tools: free, no login
+developer-api: gated — free and paid plans, keys at /developers/login
 categories: networking, dns, ssl, security, developer, devops
 
-# Full tool index available at ${base}/llms.txt
+# Full tool index and entity model at ${base}/llms.txt
 `;
   return new Response(body, {
     headers: {

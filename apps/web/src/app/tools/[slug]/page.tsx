@@ -6,8 +6,10 @@ import { ToolRenderer } from '@/components/tools/tool-renderer';
 import { ToolPageActions } from '@/components/tools/tool-page-actions';
 import { ToolCard } from '@/components/tool-card';
 import { FaqAccordion } from '@/components/home/faq-accordion';
+import { ToolAnswerBlocks, ToolHowToSteps } from '@/components/seo/tool-answer-blocks';
 import { JsonLd } from '@/components/seo/json-ld';
 import { toolJsonLd } from '@/lib/seo/json-ld';
+import { buildToolFaq, getToolSeoContent } from '@/lib/seo/tool-content';
 import { Badge } from '@/components/ui/label';
 
 const baseUrl = `https://${SITE_CONFIG.domain}`;
@@ -25,8 +27,8 @@ export async function generateMetadata({
   const tool = getToolBySlug(slug);
   if (!tool) return {};
 
-  const title = `${tool.name} — Free Online Tool`;
-  const description = `${tool.description} Use ${tool.name} free on ${SITE_CONFIG.name}. No sign-up required.`;
+  const title = `${tool.name} — Free Online ${tool.category.toUpperCase()} Tool`;
+  const description = `${tool.description} Free ${tool.name} on ${SITE_CONFIG.name}. No sign-up for browser use.`;
 
   return {
     title,
@@ -47,41 +49,31 @@ export async function generateMetadata({
   };
 }
 
-function defaultFaq(tool: { name: string; description: string; category: string }) {
-  return [
-    {
-      question: `What is ${tool.name}?`,
-      answer: `${tool.name} is a free online tool on ${SITE_CONFIG.name}. ${tool.description}`,
-    },
-    {
-      question: `Is ${tool.name} free?`,
-      answer: `Yes. ${tool.name} is completely free on ${SITE_CONFIG.name}, with no account required. The platform is open source under the MIT license.`,
-    },
-    {
-      question: `Who provides ${tool.name}?`,
-      answer: `${tool.name} is provided by ${SITE_CONFIG.name}, built and maintained by ${SITE_CONFIG.company}.`,
-    },
-  ];
-}
-
 export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const tool = getToolBySlug(slug);
   if (!tool) notFound();
 
   const related = getRelatedTools(slug);
-  const faq = tool.faq?.length ? tool.faq : defaultFaq(tool);
+  const seo = getToolSeoContent(tool);
+  const faq = buildToolFaq(tool, seo);
   const category = getCategoryBySlug(tool.category);
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <JsonLd data={toolJsonLd({ ...tool, faq })} />
+      <JsonLd data={toolJsonLd({ ...tool, faq, steps: seo.steps })} />
 
       <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-1">
           <li>
             <Link href="/" className="hover:text-primary">
               Home
+            </Link>
+          </li>
+          <li aria-hidden>/</li>
+          <li>
+            <Link href="/tools" className="hover:text-primary">
+              Tools
             </Link>
           </li>
           <li aria-hidden>/</li>
@@ -111,10 +103,17 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
             <Link href="/" className="font-medium text-primary hover:underline">
               {SITE_CONFIG.name}
             </Link>{' '}
-            — free, open-source tools by {SITE_CONFIG.company}.
+            — free browser tools by {SITE_CONFIG.company}.{' '}
+            <Link href="/developers" className="text-primary hover:underline">
+              Developer API
+            </Link>{' '}
+            available for automation.
           </p>
           <ToolPageActions toolSlug={slug} />
         </header>
+
+        <ToolAnswerBlocks tool={tool} seo={seo} />
+        <ToolHowToSteps steps={seo.steps ?? []} toolName={tool.name} />
 
         <ToolRenderer slug={slug} />
 

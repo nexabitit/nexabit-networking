@@ -27,6 +27,26 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/developers" className="text-foreground/80 hover:text-primary">
+                  Developers
+                </Link>
+              </li>
+              <li>
+                <Link href="/workspace" className="text-foreground/80 hover:text-primary">
+                  Workspace
+                </Link>
+              </li>
+              <li>
+                <Link href="/guides" className="text-foreground/80 hover:text-primary">
+                  Guides
+                </Link>
+              </li>
+              <li>
+                <Link href="/changelog" className="text-foreground/80 hover:text-primary">
+                  Changelog
+                </Link>
+              </li>
+              <li>
                 <Link href="/api-docs" className="text-foreground/80 hover:text-primary">
                   API Documentation
                 </Link>

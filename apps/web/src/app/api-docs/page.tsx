@@ -2,9 +2,12 @@ import Link from 'next/link';
 import { SITE_CONFIG } from '@nexabit/shared';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+const baseUrl = `https://${SITE_CONFIG.domain}`;
+
 export const metadata = {
-  title: 'API Documentation',
-  description: 'REST API documentation for Nexabit Network Utilities.',
+  title: 'API Documentation — REST Reference',
+  description: `REST API documentation for ${SITE_CONFIG.name}. Free browser tools; Developer API with tiered plans. DNS, SSL, and network diagnostic endpoints.`,
+  alternates: { canonical: `${baseUrl}/api-docs` },
 };
 
 const endpoints = [
