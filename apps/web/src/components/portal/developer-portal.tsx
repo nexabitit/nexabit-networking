@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Loader2, Mail, Shield } from 'lucide-react';
 import { SITE_CONFIG } from '@nexabit/shared';
 import { useDeveloperAccount } from '@/hooks/use-developer-session';
+import { getPendingVerificationCode } from '@/lib/developer-session';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -123,13 +124,25 @@ export function DeveloperAuthForm({ mode: initialMode = 'login' }: { mode?: 'log
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
-  const [demoCode, setDemoCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const pendingCode = account && !isVerified ? getPendingVerificationCode() : null;
+
+  useEffect(() => {
+    if (account && isVerified) {
+      router.replace('/developers/dashboard');
+    }
+  }, [account, isVerified, router]);
+
   if (account && isVerified) {
-    router.replace('/developers/dashboard');
-    return null;
+    return (
+      <Card className="mx-auto max-w-md">
+        <CardContent className="py-8 text-center text-sm text-muted-foreground">
+          Redirecting to dashboard…
+        </CardContent>
+      </Card>
+    );
   }
 
   if (account && !isVerified) {
@@ -146,10 +159,10 @@ export function DeveloperAuthForm({ mode: initialMode = 'login' }: { mode?: 'log
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          {demoCode && (
+          {pendingCode && (
             <p className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
-              Launch preview: your verification code is <strong>{demoCode}</strong> (email delivery
-              coming soon).
+              Launch preview: your verification code is <strong>{pendingCode}</strong> (email
+              delivery coming soon).
             </p>
           )}
           <div className="space-y-2">
@@ -187,22 +200,27 @@ export function DeveloperAuthForm({ mode: initialMode = 'login' }: { mode?: 'log
   const submit = async () => {
     setLoading(true);
     setError(null);
-    if (mode === 'signup') {
-      const result = await signup({ email, name, password });
-      setLoading(false);
-      if (!result.ok) {
-        setError(result.error);
-        return;
+    try {
+      if (mode === 'signup') {
+        const result = await signup({ email, name, password });
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
+      } else {
+        const result = await login(email, password);
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
+        if (!result.needsVerification) {
+          router.push('/developers/dashboard');
+        }
       }
-      setDemoCode(result.verificationCode);
-    } else {
-      const result = await login(email, password);
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
       setLoading(false);
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-      router.push('/developers/dashboard');
     }
   };
 

@@ -48,6 +48,11 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
   alternates: { canonical: baseUrl },
+  icons: {
+    icon: [{ url: '/icon', type: 'image/png' }],
+    shortcut: '/icon',
+    apple: '/icon',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',

@@ -8,6 +8,7 @@ import {
   verifyDeveloperEmail,
   logoutDeveloper,
   subscribeDeveloper,
+  SSR_DEVELOPER_ACCOUNT,
   type DeveloperAccount,
 } from '@/lib/developer-session';
 
@@ -15,7 +16,7 @@ export function useDeveloperAccount() {
   const account = useSyncExternalStore(
     subscribeDeveloper,
     getDeveloperAccount,
-    () => null,
+    () => SSR_DEVELOPER_ACCOUNT,
   );
 
   const signup = useCallback(

@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ?? '',
   },
+  async redirects() {
+    return [{ source: '/favicon.ico', destination: '/icon', permanent: true }];
+  },
   // Required for monorepo: trace dependencies from workspace root on Vercel
   outputFileTracingRoot: path.join(__dirname, '../../'),
   serverExternalPackages: ['whois-json'],

@@ -2,6 +2,8 @@ import type { ApiTier } from '@nexabit/shared';
 
 export const DEVELOPER_STORAGE_KEY = 'nexabit-developer-account-v1';
 export const DEVELOPER_EVENT = 'nexabit-developer-update';
+export const VERIFY_CODE_KEY = 'nexabit-verify-code';
+export const VERIFY_EMAIL_KEY = 'nexabit-verify-email';
 
 export type DeveloperRole = 'developer' | 'admin';
 
@@ -15,7 +17,11 @@ export interface DeveloperAccount {
   createdAt: number;
 }
 
-const EMPTY: DeveloperAccount | null = null;
+/** Stable null snapshot for SSR — must not allocate new objects per read */
+export const SSR_DEVELOPER_ACCOUNT: DeveloperAccount | null = null;
+
+let cachedAccountJson: string | null | undefined;
+let cachedAccount: DeveloperAccount | null = null;
 
 async function hashPassword(password: string): Promise<string> {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
@@ -25,11 +31,16 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 function readAccount(): DeveloperAccount | null {
-  if (typeof window === 'undefined') return EMPTY;
+  if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem(DEVELOPER_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as DeveloperAccount) : null;
+    if (raw === cachedAccountJson) return cachedAccount;
+    cachedAccountJson = raw;
+    cachedAccount = raw ? (JSON.parse(raw) as DeveloperAccount) : null;
+    return cachedAccount;
   } catch {
+    cachedAccountJson = null;
+    cachedAccount = null;
     return null;
   }
 }
@@ -37,15 +48,25 @@ function readAccount(): DeveloperAccount | null {
 function writeAccount(account: DeveloperAccount | null) {
   if (typeof window === 'undefined') return;
   if (account) {
-    localStorage.setItem(DEVELOPER_STORAGE_KEY, JSON.stringify(account));
+    const json = JSON.stringify(account);
+    localStorage.setItem(DEVELOPER_STORAGE_KEY, json);
+    cachedAccountJson = json;
+    cachedAccount = account;
   } else {
     localStorage.removeItem(DEVELOPER_STORAGE_KEY);
+    cachedAccountJson = null;
+    cachedAccount = null;
   }
   window.dispatchEvent(new Event(DEVELOPER_EVENT));
 }
 
 export function getDeveloperAccount(): DeveloperAccount | null {
   return readAccount();
+}
+
+export function getPendingVerificationCode(): string | null {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(VERIFY_CODE_KEY);
 }
 
 export function isDeveloperLoggedIn(): boolean {
@@ -80,42 +101,47 @@ export async function signupDeveloper(input: {
   };
 
   writeAccount(account);
-  sessionStorage.setItem('nexabit-verify-code', verificationCode);
-  sessionStorage.setItem('nexabit-verify-email', email);
+  sessionStorage.setItem(VERIFY_CODE_KEY, verificationCode);
+  sessionStorage.setItem(VERIFY_EMAIL_KEY, email);
   return { ok: true, verificationCode };
 }
 
 export async function loginDeveloper(
   email: string,
   password: string,
-): Promise<{ ok: true } | { ok: false; error: string }> {
+): Promise<{ ok: true; needsVerification: boolean } | { ok: false; error: string }> {
   const account = readAccount();
-  if (!account || account.email !== email.trim().toLowerCase()) {
+  const normalized = email.trim().toLowerCase();
+  if (!account || account.email !== normalized) {
     return { ok: false, error: 'No account found. Sign up first.' };
   }
   const passwordHash = await hashPassword(password);
   if (passwordHash !== account.passwordHash) {
     return { ok: false, error: 'Incorrect password.' };
   }
-  return { ok: true };
+  return { ok: true, needsVerification: !account.emailVerified };
 }
 
 export function verifyDeveloperEmail(code: string): boolean {
   const account = readAccount();
   if (!account) return false;
-  const expected = sessionStorage.getItem('nexabit-verify-code');
-  const email = sessionStorage.getItem('nexabit-verify-email');
+  const expected = sessionStorage.getItem(VERIFY_CODE_KEY);
+  const email = sessionStorage.getItem(VERIFY_EMAIL_KEY);
   if (!expected || email !== account.email) return false;
   if (code.trim() !== expected) return false;
 
   writeAccount({ ...account, emailVerified: true });
-  sessionStorage.removeItem('nexabit-verify-code');
-  sessionStorage.removeItem('nexabit-verify-email');
+  sessionStorage.removeItem(VERIFY_CODE_KEY);
+  sessionStorage.removeItem(VERIFY_EMAIL_KEY);
   return true;
 }
 
 export function logoutDeveloper() {
   writeAccount(null);
+  if (typeof window !== 'undefined') {
+    sessionStorage.removeItem(VERIFY_CODE_KEY);
+    sessionStorage.removeItem(VERIFY_EMAIL_KEY);
+  }
 }
 
 export function subscribeDeveloper(listener: () => void) {
