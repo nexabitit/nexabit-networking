@@ -38,6 +38,7 @@ export function Header() {
             { href: '/workspace', label: 'Workspace' },
             { href: '/team', label: 'Team' },
             { href: '/developers', label: 'Developers' },
+            { href: '/pricing', label: 'Pricing' },
             { href: '/api-docs', label: 'API' },
             { href: SITE_CONFIG.githubUrl, label: 'GitHub', external: true },
           ].map((link) => (
@@ -117,6 +118,9 @@ export function Header() {
             </Link>
             <Link href="/developers" className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted" onClick={() => setMobileOpen(false)}>
               Developers
+            </Link>
+            <Link href="/pricing" className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted" onClick={() => setMobileOpen(false)}>
+              Pricing
             </Link>
             <Link href="/developers/login" className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted" onClick={() => setMobileOpen(false)}>
               API access (login)

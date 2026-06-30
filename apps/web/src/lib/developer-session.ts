@@ -4,6 +4,8 @@ export const DEVELOPER_STORAGE_KEY = 'nexabit-developer-account-v1';
 export const DEVELOPER_EVENT = 'nexabit-developer-update';
 export const VERIFY_CODE_KEY = 'nexabit-verify-code';
 export const VERIFY_EMAIL_KEY = 'nexabit-verify-email';
+export const RESET_CODE_KEY = 'nexabit-reset-code';
+export const RESET_EMAIL_KEY = 'nexabit-reset-email';
 
 export type DeveloperRole = 'developer' | 'admin';
 
@@ -141,7 +143,53 @@ export function logoutDeveloper() {
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem(VERIFY_CODE_KEY);
     sessionStorage.removeItem(VERIFY_EMAIL_KEY);
+    sessionStorage.removeItem(RESET_CODE_KEY);
+    sessionStorage.removeItem(RESET_EMAIL_KEY);
   }
+}
+
+export async function requestPasswordReset(
+  email: string,
+): Promise<{ ok: true; resetCode: string } | { ok: false; error: string }> {
+  const account = readAccount();
+  const normalized = email.trim().toLowerCase();
+  if (!account || account.email !== normalized) {
+    return { ok: false, error: 'No developer account found for that email. Sign up first.' };
+  }
+  const resetCode = String(Math.floor(100000 + Math.random() * 900000));
+  sessionStorage.setItem(RESET_CODE_KEY, resetCode);
+  sessionStorage.setItem(RESET_EMAIL_KEY, normalized);
+  return { ok: true, resetCode };
+}
+
+export function getPendingResetCode(): string | null {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(RESET_CODE_KEY);
+}
+
+export async function resetPasswordWithCode(
+  email: string,
+  code: string,
+  newPassword: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const account = readAccount();
+  const normalized = email.trim().toLowerCase();
+  if (!account || account.email !== normalized) {
+    return { ok: false, error: 'Account not found.' };
+  }
+  const expected = sessionStorage.getItem(RESET_CODE_KEY);
+  const resetEmail = sessionStorage.getItem(RESET_EMAIL_KEY);
+  if (!expected || resetEmail !== normalized || code.trim() !== expected) {
+    return { ok: false, error: 'Invalid or expired reset code.' };
+  }
+  if (newPassword.length < 8) {
+    return { ok: false, error: 'Password must be at least 8 characters.' };
+  }
+  const passwordHash = await hashPassword(newPassword);
+  writeAccount({ ...account, passwordHash });
+  sessionStorage.removeItem(RESET_CODE_KEY);
+  sessionStorage.removeItem(RESET_EMAIL_KEY);
+  return { ok: true };
 }
 
 export function subscribeDeveloper(listener: () => void) {

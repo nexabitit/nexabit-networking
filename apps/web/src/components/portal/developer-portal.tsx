@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Loader2, Mail, Shield } from 'lucide-react';
-import { SITE_CONFIG } from '@nexabit/shared';
+import { SITE_CONFIG, TOOL_COUNT } from '@nexabit/shared';
 import { useDeveloperAccount } from '@/hooks/use-developer-session';
 import { getPendingVerificationCode } from '@/lib/developer-session';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -31,16 +31,17 @@ export function DeveloperLanding() {
         </p>
         <h1 className="text-3xl font-bold md:text-4xl">Integrate {SITE_CONFIG.name}</h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Browser-based tools stay <strong className="font-semibold text-foreground">free for everyone</strong>.
-          Programmatic API access uses verified developer accounts with free and paid monthly plans.
+          {SITE_CONFIG.name} is a professional Developer API platform for network, DNS, SSL, and
+          diagnostics automation. Browser tools are available without login; programmatic access
+          requires a verified developer account and an active API plan.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/developers/login" className={buttonVariants({ size: 'lg' })}>
-            Get API access
+            Log in / Sign up
             <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link href="/api-docs" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
-            Read API docs
+          <Link href="/pricing" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
+            View API pricing
           </Link>
         </div>
         <p className="mt-4 text-sm text-muted-foreground">
@@ -49,7 +50,7 @@ export function DeveloperLanding() {
         </p>
       </section>
 
-      <section className="mb-12 grid gap-4 md:grid-cols-3">
+      <section className="mb-12 grid gap-4 sm:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Who it&apos;s for</CardTitle>
@@ -61,20 +62,29 @@ export function DeveloperLanding() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">What stays public</CardTitle>
+            <CardTitle className="text-base">Browser tools</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            All {SITE_CONFIG.trustLine.split('•')[0].trim()} — browse, run checks, and use Workspace
-            without signing in.
+            {TOOL_COUNT} diagnostic utilities — browse and run in your browser with no developer
+            account required.
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">What requires login</CardTitle>
+            <CardTitle className="text-base">Developer API</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            API key creation, usage dashboards, quota management, billing, and team-level API
-            controls.
+            Gated programmatic access with Free Developer and paid monthly plans. Keys issued after
+            login and email verification.
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Team & workspace</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Personal workspace for browser retention; Team dashboard for Growth+ plans with shared
+            MSP exports and operator seats.
           </CardContent>
         </Card>
       </section>
@@ -118,12 +128,15 @@ export function DeveloperLanding() {
 
 export function DeveloperAuthForm({ mode: initialMode = 'login' }: { mode?: 'login' | 'signup' }) {
   const router = useRouter();
-  const { account, isVerified, signup, login, verifyEmail } = useDeveloperAccount();
-  const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
+  const { account, isVerified, signup, login, verifyEmail, requestReset, resetPassword } =
+    useDeveloperAccount();
+  const [mode, setMode] = useState<'login' | 'signup' | 'reset'>(initialMode);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [code, setCode] = useState('');
+  const [resetPreviewCode, setResetPreviewCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -201,6 +214,28 @@ export function DeveloperAuthForm({ mode: initialMode = 'login' }: { mode?: 'log
     setLoading(true);
     setError(null);
     try {
+      if (mode === 'reset') {
+        if (!resetPreviewCode) {
+          const result = await requestReset(email);
+          if (!result.ok) {
+            setError(result.error);
+            return;
+          }
+          setResetPreviewCode(result.resetCode);
+        } else {
+          const result = await resetPassword(email, code, newPassword);
+          if (!result.ok) {
+            setError(result.error);
+            return;
+          }
+          setMode('login');
+          setResetPreviewCode(null);
+          setCode('');
+          setNewPassword('');
+          setError(null);
+        }
+        return;
+      }
       if (mode === 'signup') {
         const result = await signup({ email, name, password });
         if (!result.ok) {
@@ -223,6 +258,70 @@ export function DeveloperAuthForm({ mode: initialMode = 'login' }: { mode?: 'log
       setLoading(false);
     }
   };
+
+  if (mode === 'reset') {
+    return (
+      <Card className="mx-auto max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            Reset password
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {resetPreviewCode && (
+            <p className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
+              Preview: reset code <strong>{resetPreviewCode}</strong> (email via Microsoft Graph when
+              configured).
+            </p>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor="reset-email">Account email</Label>
+            <Input
+              id="reset-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={Boolean(resetPreviewCode)}
+            />
+          </div>
+          {resetPreviewCode && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="reset-code">Reset code</Label>
+                <Input id="reset-code" value={code} onChange={(e) => setCode(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="reset-password">New password</Label>
+                <Input
+                  id="reset-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  minLength={8}
+                />
+              </div>
+            </>
+          )}
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <Button type="button" className="w-full" disabled={loading || !email} onClick={submit}>
+            {resetPreviewCode ? 'Update password' : 'Send reset code'}
+          </Button>
+          <button
+            type="button"
+            className="w-full text-center text-sm text-primary hover:underline"
+            onClick={() => {
+              setMode('login');
+              setResetPreviewCode(null);
+              setError(null);
+            }}
+          >
+            Back to login
+          </button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mx-auto max-w-md">
@@ -261,6 +360,18 @@ export function DeveloperAuthForm({ mode: initialMode = 'login' }: { mode?: 'log
             minLength={8}
           />
         </div>
+        {mode === 'login' && (
+          <button
+            type="button"
+            className="text-xs text-primary hover:underline"
+            onClick={() => {
+              setMode('reset');
+              setError(null);
+            }}
+          >
+            Forgot password?
+          </button>
+        )}
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button
           type="button"

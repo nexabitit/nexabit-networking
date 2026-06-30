@@ -6,8 +6,8 @@ import { SearchBar } from '@/components/search-bar';
 const baseUrl = `https://${SITE_CONFIG.domain}`;
 
 export const metadata = {
-  title: `All ${TOOLS.length} Free Tools — Networking, DNS, SSL & DevOps`,
-  description: `Browse ${TOOLS.length} free networking, DNS, SSL, security, and developer utilities on ${SITE_CONFIG.name}. No sign-up for browser tools.`,
+  title: `All ${TOOLS.length} Network & DevOps Tools`,
+  description: `Browse ${TOOLS.length} professional networking, DNS, SSL, security, and developer utilities on ${SITE_CONFIG.name}. Developer API plans at /pricing.`,
   alternates: { canonical: `${baseUrl}/tools` },
 };
 
@@ -24,10 +24,10 @@ export default function ToolsPage() {
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold">All Tools</h1>
         <p className="mb-6 max-w-2xl text-muted-foreground">
-          {TOOLS.length} free open-source utilities for networking, DNS, SSL, security, and
-          development. Browser use requires no account. Automate via the{' '}
-          <Link href="/developers" className="text-primary hover:underline">
-            Developer API
+          {TOOLS.length} professional utilities for networking, DNS, SSL, security, and
+          development. Browser use requires no developer account. API automation uses{' '}
+          <Link href="/pricing" className="text-primary hover:underline">
+            paid API plans
           </Link>
           .
         </p>

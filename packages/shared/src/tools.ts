@@ -464,11 +464,11 @@ export const SITE_CONFIG = {
   company: 'Nexabit IT Solutions',
   companyUrl: 'https://nexabitit.com',
   githubUrl: 'https://github.com/nexabitit/nexabit-networking',
-  description: `Nexabit Network Utilities is a free, open-source platform with ${TOOL_COUNT} professional networking, DNS, SSL, security, and developer tools. Browser tools are free; the Developer API offers free and paid monthly plans. Built by Nexabit IT Solutions.`,
-  heroHeadline: 'Free network, DNS, SSL, and diagnostics tools for IT teams.',
+  description: `Professional network utilities and Developer API platform with ${TOOL_COUNT} browser-based diagnostic tools. Programmatic access uses logged-in developer accounts with free and paid monthly API plans (from ₹0). Built by Nexabit IT Solutions.`,
+  heroHeadline: 'Professional network, DNS, SSL, and diagnostics tools for IT teams.',
   heroSubline:
-    'Run fast checks, troubleshoot issues, validate configurations, and automate repeatable infrastructure tasks from one toolkit.',
-  trustLine: `${TOOL_COUNT} free browser tools • open source • Developer API with free & paid plans`,
+    'Run operational checks in your browser, then scale with the Developer API — authenticated access, tiered quotas, and team workspaces for production automation.',
+  trustLine: `${TOOL_COUNT} browser tools • Developer API from ₹0 • Team & workspace access`,
   lastUpdated: '2026-06',
   tagline: 'Nexabit Network Utilities',
   subtagline:

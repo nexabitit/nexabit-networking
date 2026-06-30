@@ -51,9 +51,7 @@ export function HeroSection() {
             </Link>
           </div>
 
-          <p className="mb-8 text-sm text-muted-foreground">
-            {SITE_CONFIG.trustLine} · Web tools free in browser · API keys after developer login
-          </p>
+          <p className="mb-8 text-sm text-muted-foreground">{SITE_CONFIG.trustLine}</p>
 
           <div className="mb-6 max-w-xl">
             <SearchBar />

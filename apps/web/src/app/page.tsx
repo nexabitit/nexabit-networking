@@ -14,7 +14,7 @@ import { HOME_FAQ, faqPageJsonLd } from '@/lib/seo/json-ld';
 import { ArrowRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Nexabit Network Utilities — Free Networking, DNS & SSL Tools',
+  title: 'Network Utilities & Developer API Platform',
   description: SITE_CONFIG.description,
   alternates: { canonical: `https://${SITE_CONFIG.domain}` },
 };

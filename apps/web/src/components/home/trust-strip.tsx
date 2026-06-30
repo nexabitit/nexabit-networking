@@ -1,15 +1,15 @@
 import Link from 'next/link';
 import { SITE_CONFIG, TOOLS } from '@nexabit/shared';
-import { Github, Code2, Shield, Calendar, Building2, Activity } from 'lucide-react';
+import { Code2, KeyRound, Calendar, Building2, Activity, CreditCard } from 'lucide-react';
 
 export function TrustStrip() {
   const items = [
-    { icon: Activity, label: `${TOOLS.length}+ tools` },
-    { icon: Github, label: 'Open source', href: SITE_CONFIG.githubUrl },
+    { icon: Activity, label: `${TOOLS.length} browser tools` },
+    { icon: KeyRound, label: 'Developer API', href: '/developers' },
+    { icon: CreditCard, label: 'Paid API plans', href: '/pricing' },
     { icon: Calendar, label: `Updated ${SITE_CONFIG.lastUpdated}` },
-    { icon: Code2, label: 'REST API', href: '/api-docs' },
+    { icon: Code2, label: 'API docs', href: '/api-docs' },
     { icon: Building2, label: SITE_CONFIG.company, href: SITE_CONFIG.companyUrl },
-    { icon: Shield, label: 'Free forever' },
   ];
 
   return (

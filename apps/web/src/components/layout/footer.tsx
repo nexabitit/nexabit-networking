@@ -32,6 +32,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/pricing" className="text-foreground/80 hover:text-primary">
+                  API Pricing
+                </Link>
+              </li>
+              <li>
                 <Link href="/workspace" className="text-foreground/80 hover:text-primary">
                   Workspace
                 </Link>
@@ -86,7 +91,7 @@ export function Footer() {
                   className="inline-flex items-center gap-1.5 text-foreground/80 hover:text-primary"
                 >
                   <Github className="h-3.5 w-3.5" />
-                  Open Source
+                  GitHub
                 </Link>
               </li>
             </ul>
@@ -94,7 +99,7 @@ export function Footer() {
         </div>
         <div className="mt-10 flex flex-col items-center justify-between gap-2 border-t border-border pt-6 text-center text-sm text-muted-foreground sm:flex-row sm:text-left">
           <span>
-            © {new Date().getFullYear()} {SITE_CONFIG.company}. MIT License.
+            © {new Date().getFullYear()} {SITE_CONFIG.company}. All rights reserved.
           </span>
           <span>{SITE_CONFIG.name} — network.nexabitit.com</span>
         </div>

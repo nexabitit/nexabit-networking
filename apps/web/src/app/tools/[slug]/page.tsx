@@ -27,8 +27,8 @@ export async function generateMetadata({
   const tool = getToolBySlug(slug);
   if (!tool) return {};
 
-  const title = `${tool.name} — Free Online ${tool.category.toUpperCase()} Tool`;
-  const description = `${tool.description} Free ${tool.name} on ${SITE_CONFIG.name}. No sign-up for browser use.`;
+  const title = `${tool.name} — Online ${tool.category.toUpperCase()} Tool`;
+  const description = `${tool.description} Use ${tool.name} on ${SITE_CONFIG.name}. Developer API access available with logged-in plans.`;
 
   return {
     title,
@@ -103,11 +103,14 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
             <Link href="/" className="font-medium text-primary hover:underline">
               {SITE_CONFIG.name}
             </Link>{' '}
-            — free browser tools by {SITE_CONFIG.company}.{' '}
-            <Link href="/developers" className="text-primary hover:underline">
-              Developer API
-            </Link>{' '}
-            available for automation.
+            — browser diagnostics by {SITE_CONFIG.company}.{' '}
+            <Link href="/pricing" className="text-primary hover:underline">
+              API pricing
+            </Link>
+            {' · '}
+            <Link href="/developers/login" className="text-primary hover:underline">
+              Developer login
+            </Link>
           </p>
           <ToolPageActions toolSlug={slug} />
         </header>

@@ -27,7 +27,8 @@ export function BusinessCta() {
         <div className="mb-10 max-w-2xl">
           <h2 className="text-3xl font-bold">Need more than free tools?</h2>
           <p className="mt-2 text-muted-foreground">
-            {SITE_CONFIG.name} is free and open source. {SITE_CONFIG.company} helps SMEs,
+            {SITE_CONFIG.name} provides browser-based diagnostics and a gated Developer API with
+            tiered monthly plans. {SITE_CONFIG.company} helps SMEs,
             hospitals, and schools with managed IT, cloud, security, and custom implementations.
           </p>
         </div>

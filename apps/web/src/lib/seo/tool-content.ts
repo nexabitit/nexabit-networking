@@ -184,13 +184,13 @@ export function getToolSeoContent(tool: ToolDefinition): ToolSeoContent {
     extraFaq: [
       {
         question: `When should I use ${tool.name}?`,
-        answer: `Use ${tool.name} when you need to ${tool.description.charAt(0).toLowerCase()}${tool.description.slice(1)} It is free in the browser on ${SITE_CONFIG.name} with no login required.`,
+        answer: `Use ${tool.name} when you need to ${tool.description.charAt(0).toLowerCase()}${tool.description.slice(1)} Browser access on ${SITE_CONFIG.name} requires no account.`,
       },
       {
         question: `Can I use ${tool.name} via API?`,
         answer: tool.apiPath
-          ? `Yes. ${tool.name} is available via the Developer API at ${tool.apiPath}. Sign in at /developers/login to create an API key. Browser use remains free.`
-          : `This tool runs client-side in your browser. For automation of related checks, see the Developer API at /developers for endpoints in the same category.`,
+          ? `Yes. ${tool.name} is available via the gated Developer API at ${tool.apiPath}. Sign in at /developers/login, verify your email, and create an API key on an active plan.`
+          : `This tool runs in your browser. Related automation endpoints are available on paid or Free Developer API plans — see /pricing.`,
       },
     ],
   };
@@ -205,14 +205,14 @@ export function buildToolFaq(
     : [
         {
           question: `What is ${tool.name}?`,
-          answer: `${tool.name} is a free online tool on ${SITE_CONFIG.name}. ${tool.description}`,
+          answer: `${tool.name} is a browser-based utility on ${SITE_CONFIG.name}. ${tool.description}`,
         },
       ];
 
   const standard = [
     {
-      question: `Is ${tool.name} free?`,
-      answer: `Yes. ${tool.name} is free in your browser on ${SITE_CONFIG.name} with no account required. The Developer API has separate free and paid plans for automation.`,
+      question: `Is ${tool.name} free in the browser?`,
+      answer: `${tool.name} can be used in your browser without a developer account. Programmatic access via the Developer API requires a logged-in account and an active API plan — see /pricing.`,
     },
     {
       question: `Who provides ${tool.name}?`,

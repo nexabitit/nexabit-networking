@@ -6,7 +6,7 @@ const baseUrl = `https://${SITE_CONFIG.domain}`;
 
 export const metadata = {
   title: 'API Documentation — REST Reference',
-  description: `REST API documentation for ${SITE_CONFIG.name}. Free browser tools; Developer API with tiered plans. DNS, SSL, and network diagnostic endpoints.`,
+  description: `Gated REST API for ${SITE_CONFIG.name}. Developer plans from Free Developer (₹0) to Team. Login required for API keys.`,
   alternates: { canonical: `${baseUrl}/api-docs` },
 };
 
@@ -41,12 +41,16 @@ export default function ApiDocsPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="mb-2 text-3xl font-bold">API Documentation</h1>
       <p className="mb-8 text-muted-foreground">
-        REST API for {SITE_CONFIG.name}. Browser tools are free for everyone. Programmatic access
-        uses developer accounts with tiered monthly plans —{' '}
+        Gated REST API for {SITE_CONFIG.name}. Browser diagnostics require no account. Programmatic
+        access uses logged-in developer accounts with monthly API plans —{' '}
+        <Link href="/pricing" className="text-primary hover:underline">
+          view pricing
+        </Link>
+        ,{' '}
         <Link href="/developers/login" className="text-primary hover:underline">
-          get API access
+          log in
         </Link>{' '}
-        to create keys. Unauthenticated requests are rate limited per IP.
+        to create keys. Unauthenticated API requests are rate limited per IP.
       </p>
 
       <Card className="mb-8">

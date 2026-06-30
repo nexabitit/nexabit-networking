@@ -29,7 +29,7 @@ function tier(
 export const API_TIERS: ApiTierDefinition[] = [
   tier({
     id: 'free',
-    name: 'Free',
+    name: 'Free Developer',
     requestsPerSecond: 2,
     monthlyQuota: 10_000,
     maxApps: 1,

@@ -40,11 +40,26 @@ export function softwareApplicationJsonLd() {
     name: SITE_CONFIG.name,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR', description: 'Free browser tools' },
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Free Developer API',
+        price: '0',
+        priceCurrency: 'INR',
+        description: '10,000 requests/month with verified developer account',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Starter API',
+        price: '999',
+        priceCurrency: 'INR',
+        description: 'Monthly paid developer API plan',
+      },
+    ],
     description: SITE_CONFIG.description,
     url: baseUrl,
     author: { '@type': 'Organization', name: SITE_CONFIG.company },
-    featureList: `${TOOL_COUNT} tools across ${CATEGORIES.map((c) => c.name).join(', ')}`,
+    featureList: `${TOOL_COUNT} browser tools; gated Developer API with tiered monthly plans`,
   };
 }
 
@@ -166,16 +181,18 @@ export function generateLlmsTxt(): string {
     `> ${SITE_CONFIG.description}`,
     '',
     `## Entity model`,
-    `- Product: ${SITE_CONFIG.name} (${baseUrl})`,
+    `- Product: ${SITE_CONFIG.name} — professional network utilities + Developer API platform (${baseUrl})`,
     `- Company: ${SITE_CONFIG.company} (${SITE_CONFIG.companyUrl})`,
-    `- Tool count: ${TOOL_COUNT} free browser utilities`,
-    `- Developer API: gated access with free (₹0) and paid monthly plans — keys after login at /developers/login`,
-    `- Browser tools: free, no login required`,
+    `- Browser tools: ${TOOL_COUNT} diagnostics utilities — no login required to browse and run`,
+    `- Developer API: authenticated access only — login at /developers/login, keys after email verification`,
+    `- Pricing: Free Developer ₹0, Starter ₹999/mo, Growth ₹2,999/mo, Team ₹7,999/mo, Enterprise custom`,
+    `- Team: shared MSP exports and seats on Growth+ plans (/team)`,
+    `- Workspace: personal browser workspace for recent checks and watchlists (/workspace)`,
     '',
     '## Key pages',
     `- [Home](${baseUrl}/)`,
     `- [All tools](${baseUrl}/tools) — ${TOOL_COUNT} utilities`,
-    `- [Developers](${baseUrl}/developers) — API overview and pricing teaser`,
+    `- [Pricing](${baseUrl}/pricing) — API plan comparison`,
     `- [Developer login](${baseUrl}/developers/login) — API key access`,
     `- [Workspace](${baseUrl}/workspace) — local recent checks and watchlists`,
     `- [Team](${baseUrl}/team) — MSP exports (Growth/Team plans)`,
@@ -218,32 +235,55 @@ export function generateLlmsTxt(): string {
 export const HOME_FAQ = [
   {
     question: 'What is Nexabit Network Utilities?',
-    answer: `Nexabit Network Utilities is a free, open-source platform with ${TOOL_COUNT} online tools for networking, DNS, SSL/TLS, cybersecurity, and software development. It is built and maintained by Nexabit IT Solutions.`,
+    answer: `Nexabit Network Utilities is a professional network utilities and Developer API platform with ${TOOL_COUNT} browser-based tools for networking, DNS, SSL/TLS, security, and DevOps. It is built and maintained by Nexabit IT Solutions.`,
   },
   {
-    question: 'Are Nexabit Network Utilities free to use?',
+    question: 'Do I need an account to use the tools?',
     answer:
-      'Yes. Every browser-based tool is completely free with no login required. The Developer API uses verified accounts with free and paid monthly plans — API keys are available after login and email verification.',
+      'No. You can browse and run diagnostic tools in your browser without signing in. The Developer API for automation requires a logged-in developer account with email verification and a paid or free-tier API plan.',
   },
   {
-    question: 'What tools are available on Nexabit Network Utilities?',
+    question: 'What tools are available?',
     answer:
       'The platform includes DNS lookup, DNS propagation, SSL checker, SSL expiry monitor, CIDR calculator, WHOIS, traceroute, SPF/DKIM/DMARC checkers, HTTP security headers, bulk DNS lookup, and more across networking, DNS, SSL, security, developer, and DevOps categories.',
   },
   {
-    question: 'Does Nexabit Network Utilities have an API?',
+    question: 'How does the Developer API work?',
     answer:
-      'Yes. A Developer API is available at /api/v1 with free and paid access plans (from ₹0 to Team tiers). Documentation is at /api-docs. Create keys and manage usage from the developer portal after signing in at /developers/login.',
+      'The REST API at /api/v1 uses tiered monthly plans from Free Developer (₹0) through Team (₹7,999/mo). Sign in at /developers/login, verify your email, and generate API keys from the dashboard. Documentation is at /api-docs.',
   },
   {
     question: 'How do I get an API key?',
     answer:
-      'Click Get API access, create a developer account at /developers/login, verify your email, then generate a key from the dashboard. Keys are shown once at creation.',
+      'Create a developer account at /developers/login, verify your email, then generate a key from the dashboard. Keys are shown once at creation and require an active plan.',
   },
   {
     question: 'Who built Nexabit Network Utilities?',
     answer:
       'Nexabit Network Utilities is built by Nexabit IT Solutions, an IT services company specializing in networking, cloud infrastructure, and cybersecurity.',
+  },
+] as const;
+
+export const PRICING_FAQ = [
+  {
+    question: 'Can I see full pricing without logging in?',
+    answer:
+      'Yes. Visit /pricing for plan names, starting prices, and limits. Log in at /developers/login to activate a plan, generate API keys, and manage billing.',
+  },
+  {
+    question: 'What is included in the Free Developer plan?',
+    answer:
+      'Free Developer (₹0) includes 10,000 API requests per month, 2 RPS, 1 application, 1 API key, and 7-day analytics. It requires a verified developer account.',
+  },
+  {
+    question: 'How do paid plans work?',
+    answer:
+      'Starter (₹999/mo), Growth (₹2,999/mo), and Team (₹7,999/mo) add higher quotas, more keys, team seats, and support levels. Contact Nexabit IT Solutions to activate billing.',
+  },
+  {
+    question: 'When should I upgrade to Team?',
+    answer:
+      'Choose Team when you need MSP exports, shared usage visibility, and up to 10 operator seats for client or internal environments.',
   },
 ] as const;
 
@@ -254,14 +294,14 @@ export const DEVELOPER_FAQ = [
       'Sign up at /developers/login, verify your email, open the developer dashboard, create an application label, and generate a key. The full key is shown only once — store it securely.',
   },
   {
-    question: 'What is included in the free API tier?',
+    question: 'What is included in the Free Developer tier?',
     answer:
-      'The free plan includes 10,000 requests per month, 2 requests per second, 1 application, 1 API key, and 7-day usage analytics. Browser tools remain free without an API key.',
+      'Free Developer includes 10,000 requests per month, 2 RPS, 1 application, 1 API key, and 7-day usage analytics. Browser tools do not require an API key.',
   },
   {
-    question: 'How do team seats work?',
+    question: 'How do team accounts work?',
     answer:
-      'Team seats are available on Growth (3 seats), Team (10 seats), and Enterprise (custom). Team dashboard features such as shared MSP exports require Growth or higher after login.',
+      'Team seats are on Growth (3), Team (10), and Enterprise (custom). After login, Growth+ users access /team for shared MSP exports, member profiles, and operational workspace.',
   },
   {
     question: 'What happens when I hit my API quota?',
@@ -269,8 +309,13 @@ export const DEVELOPER_FAQ = [
       'Requests may be throttled or blocked until the monthly quota resets. The dashboard shows quota usage and upgrade options. Contact Nexabit IT Solutions for Enterprise custom limits.',
   },
   {
-    question: 'Is the Developer API the same as browser tools?',
+    question: 'How is the Developer API different from browser tools?',
     answer:
-      'Browser tools are always free for visitors. The API is for automation and integrations, with rate limits and quotas tied to your developer plan.',
+      'Browser tools are for manual diagnostics without an account. The Developer API is for programmatic access with authenticated keys, monthly quotas, and paid upgrade paths.',
+  },
+  {
+    question: 'How do I reset my developer account password?',
+    answer:
+      'Use Forgot password on /developers/login. A reset code is issued to your registered email (preview mode shows the code on screen until transactional email is connected).',
   },
 ] as const;

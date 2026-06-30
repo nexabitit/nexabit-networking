@@ -10,21 +10,21 @@ export async function GET() {
 name: ${SITE_CONFIG.name}
 url: ${base}
 description: ${SITE_CONFIG.description}
-license: MIT
-api: ${base}/api/v1
-docs: ${base}/api-docs
-llms-txt: ${base}/llms.txt
-sitemap: ${base}/sitemap.xml
+product-type: professional-network-utilities-and-developer-api
 organization: ${SITE_CONFIG.company}
 organization-url: ${SITE_CONFIG.companyUrl}
-github: ${SITE_CONFIG.githubUrl}
+api: ${base}/api/v1
+docs: ${base}/api-docs
+pricing: ${base}/pricing
+llms-txt: ${base}/llms.txt
+sitemap: ${base}/sitemap.xml
 crawl: allowed
 tools-count: ${TOOL_COUNT}
-browser-tools: free, no login
-developer-api: gated — free and paid plans, keys at /developers/login
-categories: networking, dns, ssl, security, developer, devops
+browser-tools: no-account-required
+developer-api: login-required — Free Developer and paid monthly plans
+pricing-plans: Free-Developer-0, Starter-999, Growth-2999, Team-7999, Enterprise-custom
 
-# Full tool index and entity model at ${base}/llms.txt
+# Full entity model and tool index at ${base}/llms.txt
 `;
   return new Response(body, {
     headers: {
